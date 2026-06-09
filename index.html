@@ -314,6 +314,40 @@ body::after {
 .violet .card-cta  { background: var(--violet-soft);  color: var(--violet);  }
 .emerald .card-cta { background: var(--emerald-soft); color: var(--emerald); }
 
+/* ── PAGE HEADER (centered) ─────────────────── */
+.page-header {
+  text-align: center;
+  margin-bottom: 52px;
+}
+.page-header .course-pill  { margin-bottom: 22px; }
+.page-header .meta-row     { justify-content: center; margin-bottom: 0; }
+
+/* ── ENTRANCE ANIMATIONS ─────────────────────── */
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-header .course-pill  { animation: heroFadeUp .55s cubic-bezier(.16,1,.3,1) both .05s; }
+.page-header .page-title   { animation: heroFadeUp .60s cubic-bezier(.16,1,.3,1) both .15s; }
+.page-header .page-sub     { animation: heroFadeUp .55s cubic-bezier(.16,1,.3,1) both .27s; }
+.page-header .meta-row     { animation: heroFadeUp .55s cubic-bezier(.16,1,.3,1) both .38s; }
+.section-label             { animation: heroFadeUp .50s cubic-bezier(.16,1,.3,1) both .48s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .page-header .course-pill,
+  .page-header .page-title,
+  .page-header .page-sub,
+  .page-header .meta-row,
+  .section-label,
+  .course-card { animation: none !important; }
+}
+
+/* ── CARD PRESS STATE ────────────────────────── */
+.course-card:active {
+  transform: translateY(-2px) scale(0.985);
+  transition-duration: .08s;
+}
+
 /* ── FOOTER ──────────────────────────────────── */
 .site-footer {
   border-top: 1px solid var(--border);
@@ -350,15 +384,16 @@ body::after {
 <div id="main" style="display:none; width:100%;">
 <div class="wrapper">
 
-  <div class="course-pill">NYU Stern · MSBAi · Module 2</div>
-  <h1 class="page-title">Module 2<br /><em>Notes & Resources</em></h1>
-  <p class="page-sub">June 8–12, 2026 · In-person week, Classroom 2-100</p>
-
-  <div class="meta-row">
-    <span class="meta-chip">📅 Jun 8–12</span>
-    <span class="meta-chip">📚 4 courses</span>
-    <span class="meta-chip">🎓 Prof. Ipeirotis · Prof. Shankar · Prof. Zhang</span>
-    <span class="meta-chip">🗽 NYC</span>
+  <div class="page-header">
+    <div class="course-pill">NYU Stern · MSBAi · Module 2</div>
+    <h1 class="page-title">Module 2<br /><em>Notes & Resources</em></h1>
+    <p class="page-sub">June 8–12, 2026 · In-person week, Classroom 2-100</p>
+    <div class="meta-row">
+      <span class="meta-chip">📅 Jun 8–12</span>
+      <span class="meta-chip">📚 4 courses</span>
+      <span class="meta-chip">🎓 Prof. Ipeirotis · Prof. Shankar · Prof. Zhang</span>
+      <span class="meta-chip">🗽 NYC</span>
+    </div>
   </div>
 
   <div class="section-label">Courses</div>
