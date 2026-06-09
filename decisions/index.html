@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decision Models · Module 2 · NYU Stern MSBAi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+:root {
+  --bg:      #f0fdf7;
+  --surface: #e6faf2;
+  --card:    #ffffff;
+  --border-soft: rgba(0,0,0,.07);
+  --text:    #0f2c20;
+  --muted:   #4d8068;
+  --faint:   #a8d5c0;
+  --accent:  #059669;
+  --accent-bright: #34d399;
+  --accent-glow: rgba(5,150,105,.15);
+  --accent-soft: rgba(5,150,105,.08);
+}
+
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'Lora', Georgia, serif;
+  min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; overflow-x: hidden; position: relative;
+}
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image: radial-gradient(circle, rgba(5,150,105,.06) 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none; z-index: 0;
+}
+
+#gate { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.gate-box { background: var(--card); border: 1px solid var(--border-soft); border-radius: 16px; padding: 40px 44px; max-width: 360px; width: 90%; text-align: center; box-shadow: 0 4px 24px rgba(0,0,0,.06); }
+.gate-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
+.gate-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); margin-bottom: 24px; line-height: 1.3; }
+.gate-input { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-soft); background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: .08em; outline: none; text-align: center; transition: border-color .2s; }
+.gate-input:focus { border-color: var(--accent); }
+.gate-btn { margin-top: 12px; width: 100%; padding: 10px; border-radius: 8px; border: none; cursor: pointer; background: var(--accent); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; transition: opacity .2s; }
+.gate-btn:hover { opacity: .85; }
+.gate-err { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #ef4444; margin-top: 10px; min-height: 16px; }
+
+.wrapper { width: 100%; max-width: 860px; padding: 64px 28px 96px; position: relative; z-index: 1; }
+.back-nav { display: inline-flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); text-decoration: none; letter-spacing: .06em; margin-bottom: 36px; opacity: .75; transition: opacity .2s, color .2s; }
+.back-nav:hover { opacity: 1; color: var(--accent); }
+
+.course-pill { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); border: 1px solid rgba(5,150,105,.2); border-radius: 20px; padding: 4px 14px; display: inline-block; margin-bottom: 20px; }
+.page-title { font-family: 'DM Serif Display', serif; font-size: clamp(32px,5vw,48px); line-height: 1.15; color: var(--text); margin-bottom: 8px; }
+.page-title em { font-style: italic; color: var(--accent); }
+.page-sub { font-size: 15px; color: var(--muted); font-style: italic; margin-bottom: 24px; }
+.meta-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 52px; }
+.meta-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); background: var(--card); border: 1px solid var(--border-soft); border-radius: 6px; padding: 5px 12px; }
+.meta-chip.hi { color: var(--accent); background: var(--accent-soft); border-color: rgba(5,150,105,.2); }
+
+.section { margin-bottom: 52px; }
+.section-label { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin-bottom: 16px; padding-left: 2px; }
+
+.empty-state { border: 1px dashed rgba(5,150,105,.25); border-radius: 12px; padding: 36px 28px; text-align: center; color: var(--muted); }
+.empty-icon { font-size: 28px; margin-bottom: 12px; }
+.empty-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); margin-bottom: 6px; }
+.empty-text { font-size: 14px; font-style: italic; }
+
+.assignment-card { background: var(--card); border: 1px solid var(--border-soft); border-radius: 12px; padding: 22px 24px; margin-bottom: 12px; display: flex; gap: 18px; align-items: flex-start; box-shadow: 0 2px 8px rgba(0,0,0,.04); }
+.ac-badge { flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); border: 1px solid rgba(5,150,105,.15); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.ac-body { flex: 1; }
+.ac-label { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
+.ac-title { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--text); margin-bottom: 4px; }
+.ac-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.ac-due { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); margin-top: 8px; }
+.ac-due span { color: var(--accent); font-weight: 600; }
+
+.weight-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.weight-chip { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; padding: 2px 8px; border-radius: 20px; background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(5,150,105,.2); }
+
+.late-policy {
+  background: var(--card); border: 1px solid var(--border-soft);
+  border-radius: 12px; padding: 18px 22px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.04);
+}
+.late-policy .lp-title { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+.lp-row { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--muted); padding: 5px 0; border-bottom: 1px solid var(--border-soft); }
+.lp-row:last-child { border-bottom: 0; }
+.lp-row .penalty { color: #ef4444; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-label">Decision Models · Module 2</div>
+    <div class="gate-title">Daivik's Notes</div>
+    <input id="gate-input" class="gate-input" type="password" placeholder="password" autocomplete="off" />
+    <button class="gate-btn" onclick="tryUnlock()">Enter</button>
+    <div class="gate-err" id="gate-err"></div>
+  </div>
+</div>
+
+<div id="main" style="display:none; width:100%;">
+<div class="wrapper">
+
+  <a class="back-nav" href="../">← Module 2 hub</a>
+
+  <div class="course-pill">DM · Thu–Fri Jun 11–12</div>
+  <h1 class="page-title">Decision Models<br /><em>&amp; Analytics</em></h1>
+  <p class="page-sub">Prof. Jiawei Zhang · LP · Simulation · Excel Solver</p>
+
+  <div class="meta-row">
+    <span class="meta-chip hi">Thu–Fri Jun 11–12</span>
+    <span class="meta-chip">Linear Programming</span>
+    <span class="meta-chip">Integer Programming</span>
+    <span class="meta-chip">Monte Carlo</span>
+    <span class="meta-chip">Excel Solver</span>
+    <span class="meta-chip">Crystal Ball</span>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Lecture Notes</div>
+    <div class="empty-state">
+      <div class="empty-icon">📊</div>
+      <div class="empty-label">No notes yet</div>
+      <div class="empty-text">Notes will be added after the Jun 11–12 sessions.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Key Concepts</div>
+    <div class="empty-state">
+      <div class="empty-icon">💡</div>
+      <div class="empty-label">Coming soon</div>
+      <div class="empty-text">LP formulation, Solver setup, Newsvendor model, integer programming, Monte Carlo simulation with Crystal Ball.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Assignments</div>
+
+    <div class="assignment-card">
+      <div class="ac-badge">📦</div>
+      <div class="ac-body">
+        <div class="ac-label">Pre-module Assignment · 20%</div>
+        <div class="ac-title">Problem 1 — Ordering a New Product (Newsvendor)</div>
+        <div class="ac-desc">Price $100, cost $75, salvage $25 → Cu=25, Co=50, critical ratio=0.333 → order at 33rd percentile. Use ML forecast=200 + 500 historical items to find error distribution. 1-page report, graded on effort.</div>
+        <div class="ac-due">Due: <span>Jun 8, 2026</span></div>
+      </div>
+    </div>
+
+    <div class="assignment-card">
+      <div class="ac-badge">⛵</div>
+      <div class="ac-body">
+        <div class="ac-label">Pre-module Assignment · 20%</div>
+        <div class="ac-title">Problem 2 — Sailco Production Planning</div>
+        <div class="ac-desc">Sell $2,000, cost $1,200, holding $60/unit/qtr, overtime +$200 above 600 reg capacity. Forecast Year 11 Q1–Q4 from 10yr trend + seasonality. 1-page report, effort-based grading.</div>
+        <div class="ac-due">Due: <span>Jun 8, 2026</span></div>
+      </div>
+    </div>
+
+    <div class="assignment-card">
+      <div class="ac-badge">📐</div>
+      <div class="ac-body">
+        <div class="ac-label">Pre-module Assignment · 20%</div>
+        <div class="ac-title">Problem 3 — Online Advertising LP</div>
+        <div class="ac-desc">Linear program in Excel Solver using OnlineAdvertising_Template.xlsx. Maximize 2.60×Σ(views×CTR) subject to section capacities (Sports≤6M, National≤5M) + per-advertiser minimums (Delta≥2, T-Mobile≥3, CapOne≥2). Submit Excel file, no report.</div>
+        <div class="ac-due">Due: <span>Jun 8, 2026</span></div>
+        <div class="weight-bar">
+          <span class="weight-chip">Need Solver add-in</span>
+          <span class="weight-chip">8 decision cells</span>
+          <span class="weight-chip">Submit .xlsx</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="assignment-card">
+      <div class="ac-badge">👥</div>
+      <div class="ac-body">
+        <div class="ac-label">Post-module Group · 30%</div>
+        <div class="ac-title">Group Post-Module Assignment</div>
+        <div class="ac-desc">Details TBD in class. Group work on optimization or simulation problem.</div>
+        <div class="ac-due">Due: <span>post-module</span></div>
+      </div>
+    </div>
+
+    <div class="assignment-card">
+      <div class="ac-badge">👤</div>
+      <div class="ac-body">
+        <div class="ac-label">Post-module Individual · 30%</div>
+        <div class="ac-title">Individual Post-Module Assignment</div>
+        <div class="ac-desc">Details TBD in class. Individual LP/simulation problem.</div>
+        <div class="ac-due">Due: <span>post-module</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section">
+    <div class="section-label">Late Policy</div>
+    <div class="late-policy">
+      <div class="lp-title">Penalty schedule</div>
+      <div class="lp-row"><span>Up to 3 days late</span><span class="penalty">−15%</span></div>
+      <div class="lp-row"><span>3–5 days late</span><span class="penalty">−30%</span></div>
+      <div class="lp-row"><span>5–10 days late</span><span class="penalty">−50%</span></div>
+      <div class="lp-row"><span>Beyond 10 days</span><span class="penalty">0</span></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+const KEY = 'notes-unlocked';
+const PWD = 'huncho';
+if (sessionStorage.getItem(KEY) === 'true') {
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('main').style.display = 'block';
+}
+document.getElementById('gate-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+function tryUnlock() {
+  const val = document.getElementById('gate-input').value.trim().toLowerCase();
+  if (val === PWD) {
+    sessionStorage.setItem(KEY, 'true');
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('main').style.display = 'block';
+  } else {
+    document.getElementById('gate-err').textContent = 'wrong password';
+    document.getElementById('gate-input').value = '';
+  }
+}
+</script>
+</body>
+</html>
