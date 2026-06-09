@@ -7,29 +7,33 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-
 :root {
   --bg:      #0f0d0a;
   --surface: #171410;
   --card:    #1c1914;
-  --border:  rgba(251,146,60,.1);
-  --border-soft: rgba(255,255,255,.06);
+  --border:  #2b2114;
+  --accent:  #fb923c;
+  --accent-soft: rgba(251,146,60,.08);
+  --amber:   #fbbf24;
+  --green:   #34d399;
+  --red:     #f87171;
   --text:    #f2ede6;
   --muted:   #a08060;
   --faint:   #3d3020;
-  --accent:  #fb923c;
-  --accent-dim: #f97316;
-  --accent-glow: rgba(251,146,60,.18);
-  --accent-soft: rgba(251,146,60,.08);
+  --sidebar-w: 256px;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 
 body {
   background: var(--bg); color: var(--text);
   font-family: 'Lora', Georgia, serif;
-  min-height: 100vh; display: flex; flex-direction: column;
-  align-items: center; overflow-x: hidden; position: relative;
+  font-size: 16px; line-height: 1.75;
+  display: flex; min-height: 100vh; overflow-x: hidden;
 }
 body::before {
   content: ''; position: fixed; inset: 0;
@@ -37,54 +41,151 @@ body::before {
   background-size: 28px 28px; pointer-events: none; z-index: 0;
 }
 body::after {
-  content: ''; position: fixed; top: -180px; left: 50%; transform: translateX(-50%);
-  width: 900px; height: 350px;
-  background: radial-gradient(ellipse at 50% 50%, rgba(251,146,60,.08) 0%, transparent 60%);
+  content: ''; position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 400px;
+  background: radial-gradient(ellipse, rgba(251,146,60,.07) 0%, transparent 70%);
   pointer-events: none; z-index: 0;
 }
 
 /* ── GATE ── */
 #gate { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-.gate-box { background: var(--surface); border: 1px solid var(--border-soft); border-radius: 16px; padding: 40px 44px; max-width: 360px; width: 90%; text-align: center; }
+.gate-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px 44px; max-width: 360px; width: 90%; text-align: center; }
 .gate-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
-.gate-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); margin-bottom: 24px; line-height: 1.3; }
-.gate-input { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-soft); background: var(--card); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: .08em; outline: none; text-align: center; transition: border-color .2s; }
+.gate-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); margin-bottom: 24px; }
+.gate-input { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: .08em; outline: none; text-align: center; transition: border-color .2s; }
 .gate-input:focus { border-color: var(--accent); }
 .gate-btn { margin-top: 12px; width: 100%; padding: 10px; border-radius: 8px; border: none; cursor: pointer; background: var(--accent); color: #0f0d0a; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; transition: opacity .2s; }
 .gate-btn:hover { opacity: .85; }
-.gate-err { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #f87171; margin-top: 10px; min-height: 16px; }
+.gate-err { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--red); margin-top: 10px; min-height: 16px; }
 
-/* ── WRAPPER ── */
-.wrapper { width: 100%; max-width: 860px; padding: 64px 28px 96px; position: relative; z-index: 1; }
+/* ── SIDEBAR ── */
+#sidebar {
+  position: fixed; top: 0; left: 0;
+  width: var(--sidebar-w); height: 100vh;
+  background: rgba(15,13,10,.97); border-right: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  overflow-y: auto; overflow-x: hidden;
+  z-index: 100; padding: 24px 0 40px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.sb-brand { padding: 0 18px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.sb-badge { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); border: 1px solid rgba(251,146,60,.25); border-radius: 4px; padding: 3px 8px; margin-bottom: 8px; }
+.sb-title { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--text); line-height: 1.3; }
+.sb-sub { font-size: 12px; color: var(--muted); margin-top: 3px; font-style: italic; }
+.sb-group { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); padding: 14px 18px 5px; }
+.sb-nav a { display: flex; align-items: center; gap: 9px; padding: 7px 18px; text-decoration: none; font-size: 13px; color: var(--muted); transition: color .15s, background .15s; border-left: 2px solid transparent; }
+.sb-nav a:hover { color: var(--text); background: rgba(255,255,255,.03); }
+.sb-nav a.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-soft); }
+.sb-nav .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--faint); flex-shrink: 0; transition: background .15s; }
+.sb-nav a.active .dot { background: var(--accent); }
+.sb-back-row { border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.sb-back-row a { display: flex; align-items: center; gap: 8px; padding: 12px 18px; text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: .05em; color: var(--muted); transition: color .15s, background .15s; }
+.sb-back-row a:hover { color: var(--text); background: rgba(255,255,255,.03); }
 
-.back-nav { display: inline-flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); text-decoration: none; letter-spacing: .06em; margin-bottom: 36px; opacity: .75; transition: opacity .2s, color .2s; }
-.back-nav:hover { opacity: 1; color: var(--accent); }
+/* ── MAIN ── */
+#main { margin-left: var(--sidebar-w); flex: 1; position: relative; z-index: 1; }
 
-.course-pill { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); border: 1px solid rgba(251,146,60,.2); border-radius: 20px; padding: 4px 14px; display: inline-block; margin-bottom: 20px; }
-.page-title { font-family: 'DM Serif Display', serif; font-size: clamp(32px,5vw,48px); line-height: 1.15; color: var(--text); margin-bottom: 8px; }
-.page-title em { font-style: italic; color: var(--accent); }
-.page-sub { font-size: 15px; color: var(--muted); font-style: italic; margin-bottom: 24px; }
-.meta-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 52px; }
-.meta-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); background: var(--surface); border: 1px solid var(--border-soft); border-radius: 6px; padding: 5px 12px; }
-.meta-chip.hi { color: var(--accent); background: var(--accent-soft); border-color: rgba(251,146,60,.2); }
+/* ── HEADER ── */
+#hdr { padding: 48px 56px 32px; border-bottom: 1px solid var(--border); }
+.hdr-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.hdr-title { font-family: 'DM Serif Display', serif; font-size: 42px; color: var(--text); line-height: 1.15; margin-bottom: 6px; }
+.hdr-title span { color: var(--accent); }
+.hdr-sub { color: var(--muted); font-size: 15px; margin-bottom: 28px; font-style: italic; }
+.day-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.day-tab { padding: 8px 20px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .07em; cursor: pointer; border: 1px solid var(--border); color: var(--muted); background: transparent; transition: all .2s; }
+.day-tab:hover { color: var(--text); border-color: var(--accent); }
+.day-tab.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 
-.section { margin-bottom: 52px; }
-.section-label { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin-bottom: 16px; padding-left: 2px; }
+/* ── CONTENT ── */
+#content { padding: 36px 56px 80px; }
+.day-panel { display: none; }
+.day-panel.active { display: block; }
 
-.empty-state { border: 1px dashed rgba(251,146,60,.2); border-radius: 12px; padding: 36px 28px; text-align: center; color: var(--muted); }
-.empty-icon { font-size: 28px; margin-bottom: 12px; }
-.empty-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); margin-bottom: 6px; }
-.empty-text { font-size: 14px; font-style: italic; }
+/* ── SECTION CARD ── */
+.sc {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; margin-bottom: 16px; overflow: hidden;
+  transition: box-shadow .2s, transform .18s;
+  animation: fadeUp .45s cubic-bezier(.16,1,.3,1) both;
+}
+.sc:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,.35); }
+.sc.bl-accent { border-left: 3px solid var(--accent); }
+.sc.bl-amber  { border-left: 3px solid var(--amber); }
+.sc.bl-green  { border-left: 3px solid var(--green); }
 
-.assignment-card { background: var(--surface); border: 1px solid var(--border-soft); border-radius: 12px; padding: 22px 24px; margin-bottom: 12px; display: flex; gap: 18px; align-items: flex-start; }
-.ac-badge { flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); border: 1px solid rgba(251,146,60,.2); display: flex; align-items: center; justify-content: center; font-size: 16px; }
-.ac-body { flex: 1; }
-.ac-label { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
-.ac-title { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--text); margin-bottom: 4px; }
-.ac-desc { font-size: 13px; color: var(--muted); line-height: 1.55; }
+.sc-hdr { padding: 20px 24px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 16px; user-select: none; transition: background .15s; }
+.sc-hdr:hover { background: rgba(255,255,255,.02); }
+.sc-hdr-l { display: flex; align-items: center; gap: 14px; }
+.sc-ico { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; background: var(--accent-soft); border: 1px solid rgba(251,146,60,.2); }
+.sc-ico.amber { background: rgba(251,191,36,.1); border-color: rgba(251,191,36,.2); }
+.sc-ico.green { background: rgba(52,211,153,.1); border-color: rgba(52,211,153,.2); }
+.sc-tag { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); margin-bottom: 3px; }
+.sc-tag.amber { color: var(--amber); }
+.sc-tag.green { color: var(--green); }
+.sc-name { font-family: 'DM Serif Display', serif; font-size: 19px; color: var(--text); line-height: 1.25; }
+.chevron { color: var(--muted); transition: transform .25s; font-size: 14px; flex-shrink: 0; opacity: .7; }
+.sc.open .chevron { transform: rotate(180deg); }
+
+.sc-body { max-height: 0; overflow: hidden; transition: max-height .4s ease, opacity .3s ease; opacity: 0; }
+.sc.open .sc-body { max-height: 4000px; opacity: 1; }
+.sc-in { padding: 4px 28px 28px 80px; border-top: 1px solid var(--border); }
+
+/* ── PROSE ── */
+.sc-in p { margin-bottom: 14px; color: rgba(242,237,230,.88); }
+.sc-in p:last-child { margin-bottom: 0; }
+.sc-in strong, .sc-in b { color: var(--text); font-weight: 600; }
+.sc-in em { color: var(--accent); font-style: italic; }
+.sc-in ul { padding-left: 20px; margin-bottom: 14px; color: rgba(242,237,230,.85); }
+.sc-in li { margin-bottom: 7px; }
+.sc-in li::marker { color: var(--accent); }
+.sc-in ol { list-style: none; padding-left: 0; margin-bottom: 14px; counter-reset: step; }
+.sc-in ol li { counter-increment: step; display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; color: rgba(242,237,230,.85); }
+.sc-in ol li::before { content: counter(step); flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-soft); border: 1px solid rgba(251,146,60,.2); color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.sc-in h4 { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--text); margin: 22px 0 9px; padding-bottom: 5px; border-bottom: 1px solid var(--border); }
+
+/* ── CALLOUT ── */
+.callout { background: var(--accent-soft); border: 1px solid rgba(251,146,60,.2); border-radius: 9px; padding: 15px 18px; margin: 16px 0; }
+.callout.amber { background: rgba(251,191,36,.08); border-color: rgba(251,191,36,.22); }
+.callout.green { background: rgba(52,211,153,.07); border-color: rgba(52,211,153,.22); }
+.c-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 7px; }
+.callout.amber .c-label { color: var(--amber); }
+.callout.green .c-label { color: var(--green); }
+.callout p { color: rgba(242,237,230,.88); margin: 0; font-size: 14.5px; line-height: 1.65; }
+
+/* ── ANOMALY LIST (good/bad badges) ── */
+.anom-list { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+.anom { background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
+.anom-b { flex-shrink: 0; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; border-radius: 5px; padding: 3px 8px; margin-top: 2px; white-space: nowrap; }
+.anom-b.bad { color: var(--red); background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.2); }
+.anom-b.ok  { color: var(--green); background: rgba(52,211,153,.1); border: 1px solid rgba(52,211,153,.2); }
+.anom-text { font-size: 14.5px; color: rgba(242,237,230,.82); line-height: 1.65; }
+.anom-text strong { color: var(--text); }
+
+/* ── TABLE ── */
+.dt { width: 100%; border-collapse: collapse; font-size: 14px; margin: 14px 0; }
+.dt th { background: var(--accent-soft); color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+.dt td { padding: 10px 14px; border-bottom: 1px solid rgba(43,33,20,.7); color: rgba(242,237,230,.82); vertical-align: top; line-height: 1.55; }
+.dt td:first-child { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: nowrap; }
+.dt td strong { color: var(--text); }
+.dt tr:last-child td { border-bottom: 0; }
+.dt tr:hover td { background: rgba(251,146,60,.03); }
+
+code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: rgba(251,146,60,.09); color: var(--accent); border-radius: 4px; padding: 1px 6px; }
+
+/* ── ASSIGNMENTS ── */
+.assign-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; margin-bottom: 12px; display: flex; gap: 18px; align-items: flex-start; }
+.ac-ico { flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); border: 1px solid rgba(251,146,60,.2); display: flex; align-items: center; justify-content: center; font-size: 17px; }
+.ac-b { flex: 1; }
+.ac-label { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
+.ac-title { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--text); margin-bottom: 4px; }
+.ac-desc { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
 .ac-due { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); margin-top: 8px; }
 .ac-due span { color: var(--accent); }
 .done-badge { display: inline-flex; align-items: center; gap: 4px; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; background: rgba(52,211,153,.1); color: #34d399; border: 1px solid rgba(52,211,153,.2); border-radius: 20px; padding: 2px 8px; margin-left: 8px; }
+
+.divider { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin: 32px 0 14px; padding-left: 2px; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
@@ -99,108 +200,509 @@ body::after {
   </div>
 </div>
 
-<div id="main" style="display:none; width:100%;">
-<div class="wrapper">
-
-  <a class="back-nav" href="../">← Module 2 hub</a>
-
-  <div class="course-pill">BD · Tue Jun 9</div>
-  <h1 class="page-title"><em>Big Data</em></h1>
-  <p class="page-sub">Dr. Ramesh Shankar · GCP · Hadoop · PySpark</p>
-
-  <div class="meta-row">
-    <span class="meta-chip hi">Tue Jun 9</span>
-    <span class="meta-chip">Hadoop / HDFS</span>
-    <span class="meta-chip">Google BigQuery</span>
-    <span class="meta-chip">Dataproc / PySpark</span>
-    <span class="meta-chip">GCS</span>
+<nav id="sidebar" style="display:none">
+  <div class="sb-back-row">
+    <a href="../">← Module 2 hub</a>
+  </div>
+  <div class="sb-brand">
+    <div class="sb-badge">BD · Module 2</div>
+    <div class="sb-title">Big Data</div>
+    <div class="sb-sub">Dr. Ramesh Shankar</div>
   </div>
 
-  <div class="section">
-    <div class="section-label">Lecture Notes</div>
-    <div class="empty-state">
-      <div class="empty-icon">⚡</div>
-      <div class="empty-label">No notes yet</div>
-      <div class="empty-text">Notes will be added after the Jun 9 in-class session.</div>
+  <div class="sb-group">Day 2 — Jun 9</div>
+  <div class="sb-nav">
+    <a href="#what-is-bigdata"><span class="dot"></span>What Is Big Data?</a>
+    <a href="#mapreduce-hadoop"><span class="dot"></span>MapReduce &amp; Hadoop</a>
+    <a href="#spark-vs-hadoop"><span class="dot"></span>Spark vs. Hadoop</a>
+    <a href="#ecosystem"><span class="dot"></span>The Hadoop Ecosystem</a>
+    <a href="#workflow"><span class="dot"></span>Typical Big Data Workflow</a>
+    <a href="#linux"><span class="dot"></span>Linux &amp; Open Source</a>
+    <a href="#cloud-demo"><span class="dot"></span>AWS &amp; GCP Demo</a>
+  </div>
+
+  <div class="sb-group">Reference</div>
+  <div class="sb-nav">
+    <a href="#exam-hooks"><span class="dot"></span>Exam Hooks</a>
+    <a href="#next-steps"><span class="dot"></span>Next Steps</a>
+    <a href="#assignments"><span class="dot"></span>Assignments</a>
+  </div>
+</nav>
+
+<div id="main" style="display:none">
+
+  <div id="hdr">
+    <div class="hdr-eyebrow">NYU Stern · MSBAi · Module 2 · Big Data</div>
+    <h1 class="hdr-title">Big <span>Data</span></h1>
+    <p class="hdr-sub">Dr. Ramesh Shankar · Hadoop · Spark · GCP · Dataproc · PySpark</p>
+    <div class="day-tabs">
+      <button class="day-tab active" data-panel="day2">Day 2 — Tue Jun 9</button>
+      <button class="day-tab" data-panel="assignments">Assignments</button>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-label">Key Concepts</div>
-    <div class="empty-state">
-      <div class="empty-icon">💡</div>
-      <div class="empty-label">Coming soon</div>
-      <div class="empty-text">Hadoop ecosystem, MapReduce, GCS buckets, BigQuery, Dataproc clusters, PySpark RDDs &amp; DataFrames.</div>
-    </div>
-  </div>
+  <div id="content">
 
-  <div class="section">
-    <div class="section-label">Assignments & Quizzes</div>
+    <!-- DAY 2 -->
+    <div id="panel-day2" class="day-panel active">
 
-    <div class="assignment-card">
-      <div class="ac-badge">✅</div>
-      <div class="ac-body">
-        <div class="ac-label">Pre-module Quiz 1 · 4% <span class="done-badge">✓ done</span></div>
-        <div class="ac-title">GCP Basics</div>
-        <div class="ac-desc">Set up GCP project, navigate console, understand billing. Submitted Jun 5.</div>
-        <div class="ac-due">Submitted: <span>Jun 5, 2026</span></div>
+      <div class="divider">Lecture — Distributed Computing Foundations</div>
+
+      <!-- WHAT IS BIG DATA -->
+      <div class="sc bl-accent open" id="what-is-bigdata">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico">🌐</div>
+            <div>
+              <div class="sc-tag">01 · Motivation</div>
+              <div class="sc-name">What Is Big Data?</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <div class="callout">
+            <span class="c-label">Working Definition</span>
+            <p><strong>"Big data" = data too large to fit on one machine</strong>, requiring a cluster of computers to store and process. This definition is always true — data growth consistently outpaces hardware capacity. No matter how powerful a single machine gets, datasets exist that exceed it.</p>
+          </div>
+          <h4>Real-World Scale Examples</h4>
+          <ul>
+            <li><strong>IoT sensors</strong> — industrial machines (GE, aircraft engines) collect vibration and fracture data second-by-second for predictive maintenance</li>
+            <li><strong>Financial transactions</strong> — every Visa/Mastercard swipe hits servers in real time</li>
+            <li><strong>Social media</strong> — every like, comment, and post timestamped and stored across billions of users</li>
+          </ul>
+          <h4>From Samples to Full Populations</h4>
+          <p>Statistics evolved when data was scarce — sampling was a <em>necessity</em>, not a virtue. Now, tools exist to collect and analyze <strong>everything</strong>: attendance, clicks, EZ-Pass records, purchases. The value proposition of big data: companies can analyze <strong>all the data</strong>, not just a representative slice.</p>
+          <h4>Transaction Databases vs. Analysis Environments</h4>
+          <div class="anom-list">
+            <div class="anom">
+              <span class="anom-b bad">Don't</span>
+              <div class="anom-text"><strong>Never run analysis on a live transaction DB</strong> (Oracle, MySQL). These support customer-facing operations — heavy analytical queries slow them down and degrade customer service.</div>
+            </div>
+            <div class="anom">
+              <span class="anom-b ok">Do</span>
+              <div class="anom-text"><strong>Copy data into a separate analysis environment</strong> — a data warehouse, data lake, or Hadoop. Hadoop and similar tools are for analysis only, never for supporting live transactions.</div>
+            </div>
+          </div>
+        </div></div>
       </div>
-    </div>
 
-    <div class="assignment-card">
-      <div class="ac-badge">✅</div>
-      <div class="ac-body">
-        <div class="ac-label">Pre-module Quiz 2 · 8% <span class="done-badge">✓ done</span></div>
-        <div class="ac-title">Google Storage & BigQuery Hands-On</div>
-        <div class="ac-desc">CREATE TABLE AS + GCS export workflow. Submitted Jun 5.</div>
-        <div class="ac-due">Submitted: <span>Jun 5, 2026</span></div>
+      <!-- MAPREDUCE & HADOOP -->
+      <div class="sc bl-accent open" id="mapreduce-hadoop">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico">⚙️</div>
+            <div>
+              <div class="sc-tag">02 · Core Concept</div>
+              <div class="sc-name">MapReduce &amp; Hadoop</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <div class="callout amber">
+            <span class="c-label">The One-Liner</span>
+            <p><strong>"MapReduce is the recipe, Hadoop is the dish."</strong> MapReduce is the algorithm — invented by Google researchers, who built the proprietary Google File System around it. Hadoop is the open-source implementation, built by researchers at Yahoo and others, available to everyone.</p>
+          </div>
+          <h4>Core Idea — Distribute Storage AND Computation</h4>
+          <ul>
+            <li>Split a massive dataset into chunks; store chunks across a cluster</li>
+            <li>Instead of sending all data to one computer, send <strong>subtasks to each node</strong></li>
+            <li>Each node processes its local chunk and returns partial results; the master aggregates them</li>
+          </ul>
+          <h4>Cluster Architecture</h4>
+          <ul>
+            <li><strong>One master node</strong> coordinates all activity</li>
+            <li><strong>N worker nodes</strong> store data and perform computation</li>
+            <li><strong>Commodity hardware</strong> used intentionally — cheap, not high-end, failure-prone (and that's fine, see below)</li>
+          </ul>
+          <h4>Fault Tolerance Through Replication</h4>
+          <ul>
+            <li>Each data chunk replicated <strong>3× by default</strong> (configurable to more)</li>
+            <li>Copies distributed randomly across different nodes</li>
+            <li>If any node fails, its chunks survive elsewhere — <strong>data is never lost</strong></li>
+            <li>Nodes can be unplugged and replaced without disrupting the cluster</li>
+          </ul>
+          <div class="callout">
+            <span class="c-label">Prof's Analogy</span>
+            <p>Like the <strong>T-1000 in Terminator</strong> — pieces fall off, but it reassembles itself and keeps going.</p>
+          </div>
+          <h4>Horizontal Scaling</h4>
+          <p>Scaling is <strong>additive</strong>: just add more nodes as data grows; no need to replace existing hardware. Before Hadoop, the only option was buying a bigger single machine — an approach that hits a ceiling. Hadoop's horizontal scaling does not.</p>
+          <h4>Disk-Based Processing</h4>
+          <p>Hadoop uses disk (HDFS) for both storage and processing: read from hard drive into RAM → process → write back to disk. Suitable for very large datasets, but slower due to constant disk I/O. <em>Analogy: like Prince of Persia loading one screen at a time from the hard drive.</em></p>
+        </div></div>
       </div>
-    </div>
 
-    <div class="assignment-card">
-      <div class="ac-badge">🔥</div>
-      <div class="ac-body">
-        <div class="ac-label">Pre-module Quiz 3 · 8%</div>
-        <div class="ac-title">PySpark Hands-On</div>
-        <div class="ac-desc">Dataproc cluster + PySpark job. Remember to DELETE cluster after — bills per-minute. Deadline was pushed from Jun 7.</div>
-        <div class="ac-due">Due: <span>July 12, 2026</span></div>
+      <!-- SPARK VS HADOOP -->
+      <div class="sc bl-green open" id="spark-vs-hadoop">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico green">⚡</div>
+            <div>
+              <div class="sc-tag green">03 · Key Distinction ★</div>
+              <div class="sc-name">Spark vs. Hadoop</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <table class="dt">
+            <thead><tr><th></th><th>Hadoop (MapReduce)</th><th>Spark</th></tr></thead>
+            <tbody>
+              <tr><td>Where data lives</td><td>Disk (HDFS) — read/write per step</td><td><strong>Distributed RAM</strong> across all cluster nodes simultaneously</td></tr>
+              <tr><td>Speed</td><td>Slower — constant disk I/O</td><td><strong>Much faster</strong> — no repeated disk reads/writes during computation</td></tr>
+              <tr><td>Best for</td><td>Storage (HDFS) — "not going anywhere"</td><td>Processing — replaces Hadoop MapReduce &amp; Pig for transformation</td></tr>
+              <tr><td>Caveat</td><td>Works at any scale</td><td>Need enough aggregate RAM across the cluster relative to your dataset</td></tr>
+            </tbody>
+          </table>
+          <div class="callout green">
+            <span class="c-label">RAM Analogy</span>
+            <p>Spark = loading the <strong>entire Prince of Persia game into RAM at once</strong> vs. Hadoop loading one screen at a time from disk. If your cluster's combined RAM fits the dataset, Spark wins on speed.</p>
+          </div>
+          <ul>
+            <li><strong>Hadoop remains the standard for storage</strong> (HDFS); Spark replaces it for processing</li>
+            <li><strong>Pig</strong> (Hadoop-era transformation tool) is being replaced by Spark for data transformation</li>
+            <li><strong>Databricks</strong> is the company behind Spark — IPO long anticipated, not yet public</li>
+            <li><strong>PySpark</strong> = the Python layer on top of Spark, making it accessible for Python-native data work — this is what we use in this course</li>
+          </ul>
+        </div></div>
       </div>
-    </div>
 
-    <div class="assignment-card">
-      <div class="ac-badge">📋</div>
-      <div class="ac-body">
-        <div class="ac-label">Post-module quizzes · 75% of grade</div>
-        <div class="ac-title">3× Post-Module Quizzes (25% each)</div>
-        <div class="ac-desc">Available June 13. Three quizzes covering the full Big Data curriculum.</div>
-        <div class="ac-due">Available: <span>Jun 13</span> · Due: <span>Jul 12, 2026</span></div>
+      <!-- ECOSYSTEM -->
+      <div class="sc bl-accent" id="ecosystem">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico">🧩</div>
+            <div>
+              <div class="sc-tag">04 · Tooling</div>
+              <div class="sc-name">The Hadoop Ecosystem</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <table class="dt">
+            <thead><tr><th>Tool</th><th>Role</th><th>Key facts</th></tr></thead>
+            <tbody>
+              <tr><td>Sqoop</td><td><strong>Ingest</strong></td><td>Pulls data from relational DBs (Oracle, MySQL, SQL Server) into HDFS. Bridges operational transaction DBs and the Hadoop analysis environment.</td></tr>
+              <tr><td>Pig</td><td><strong>Transform</strong></td><td>Cleans, joins, filters, recalculates. Named because "pigs eat anything" — ingests any data format. Uses <strong>temporary schema</strong> (no persistent tables, no clutter). Less popular now — Spark does it better.</td></tr>
+              <tr><td>Hive</td><td><strong>Report</strong></td><td>Structured queries &amp; reports. Developed at Facebook (Yahoo contributed). Uses <strong>persistent schema</strong> — tables survive the session, stored on disk, so external BI tools (Tableau, Power BI) can connect. Use case: slice sales by region × demographics × product.</td></tr>
+              <tr><td>HDFS</td><td><strong>Store</strong></td><td>The distributed storage layer. Tracks what data is where, manages replication, handles node failures automatically.</td></tr>
+              <tr><td>YARN</td><td><strong>Orchestrate</strong></td><td>"Yet Another Resource Negotiator" — manages cluster resources in the background. Analysts never touch it directly.</td></tr>
+            </tbody>
+          </table>
+          <div class="callout amber">
+            <span class="c-label">Pig vs. Hive — Likely Quiz Material</span>
+            <p><strong>Pig = temporary schema</strong>, appropriate for transformation (intermediate results shouldn't clutter the environment).<br><strong>Hive = persistent schema</strong>, appropriate for reporting (tables must survive so BI tools can connect).</p>
+          </div>
+          <h4>Outside This Course's Scope</h4>
+          <ul>
+            <li><strong>Graph data</strong> (email networks, financial transaction networks, social graphs) → specialized graph databases</li>
+            <li><strong>Streaming data</strong> (real-time stock feeds, fraud detection) → tools like Storm</li>
+          </ul>
+          <h4>Open Source Model</h4>
+          <p>Hadoop and most ecosystem tools are free as in <em>"free speech"</em> (modifiable) and <em>"free beer"</em> (no cost). Consulting companies exist to install and manage Hadoop for enterprises. Large companies often run Hadoop on-premise; cloud providers offer managed versions (like Dataproc).</p>
+        </div></div>
       </div>
-    </div>
 
-  </div>
+      <!-- WORKFLOW -->
+      <div class="sc bl-accent" id="workflow">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico">🔄</div>
+            <div>
+              <div class="sc-tag">05 · Pipeline</div>
+              <div class="sc-name">Typical Big Data Workflow</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <h4>Full Pipeline — Raw Data to Insight</h4>
+          <ol>
+            <li><strong>Ingest</strong> — Sqoop pulls structured data from RDBMS (Oracle, MySQL) into HDFS</li>
+            <li><strong>Store</strong> — HDFS holds the data in distributed, replicated chunks as flat files (CSV/TXT)</li>
+            <li><strong>Transform</strong> — Pig (or Spark) cleans, joins, filters, and reshapes the data</li>
+            <li><strong>Report</strong> — Hive aggregates and structures data into persistent tables</li>
+            <li><strong>Visualize</strong> — connect Hive tables to Tableau or Power BI for charts and dashboards</li>
+            <li><strong>Analyze</strong> — apply machine learning and predictive modeling on the structured output</li>
+          </ol>
+          <h4>Why Raw Data Needs Reshaping</h4>
+          <ul>
+            <li>LinkedIn activity arrives as individual timestamped events — analysts bucket it by hour to find peak usage patterns</li>
+            <li>Raw Facebook/Instagram interactions need aggregation before any trend is visible</li>
+          </ul>
+          <h4>Batch vs. Streaming</h4>
+          <ul>
+            <li><strong>Batch</strong> — process a stored dataset all at once (typical SQL/Hadoop workflow)</li>
+            <li><strong>Streaming</strong> — process data in real time as it arrives (Visa fraud detection, live stock aggregation). Requires specialized tools; the Hadoop ecosystem is primarily batch-oriented.</li>
+          </ul>
+          <div class="callout amber">
+            <span class="c-label">No Updates in Hadoop</span>
+            <p>Hadoop is <strong>not designed for record updates</strong> — it's an analysis environment, not a transaction system. To "clean" data: transform it, save to a <strong>new file</strong>, delete the original. (Exceptions like Apache Iceberg allow updates, but they're the exception, not the rule.)</p>
+          </div>
+        </div></div>
+      </div>
 
-</div>
-</div>
+      <!-- LINUX -->
+      <div class="sc bl-accent" id="linux">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico">🐧</div>
+            <div>
+              <div class="sc-tag">06 · Foundations</div>
+              <div class="sc-name">Linux &amp; Open Source Foundations</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <ul>
+            <li><strong>Hadoop runs on Linux only</strong> — all ecosystem tools (Pig, Hive, Sqoop, HDFS) run on Linux</li>
+            <li>Linux is free and open source: code is publicly available, modifiable, redistributable. <strong>Pull request model</strong> — anyone can propose a change; if the community accepts it, it ships globally. Contrast: Windows/macOS are closed source.</li>
+            <li><strong>Unix</strong> (created at Bell Labs, NJ) predates Linux and is the conceptual ancestor of most modern OS design. The <strong>C language</strong> also came out of Bell Labs alongside Unix.</li>
+            <li>Linux "flavors" (distributions): Red Hat, Ubuntu, Debian — core commands are largely consistent across them</li>
+          </ul>
+          <h4>Commands Used in the Demo</h4>
+          <table class="dt">
+            <thead><tr><th>Command</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td>wget</td><td>Download files from the web into the Linux VM</td></tr>
+              <tr><td>hdfs dfs</td><td>Interact with HDFS (e.g. <code>hdfs dfs -put</code> to move files in)</td></tr>
+              <tr><td>sqoop import</td><td>Import a table from a relational DB into HDFS</td></tr>
+              <tr><td>pig script</td><td>Run a Pig transformation script</td></tr>
+            </tbody>
+          </table>
+          <p>Cloud services abstract most of this, but understanding the layer underneath makes you more robust as an analyst.</p>
+          <div class="callout green">
+            <span class="c-label">Prof's Advice — AI Tools &amp; Skill Retention</span>
+            <p>Use AI coding assistants (Cursor, Claude, Copilot) for coursework, but <strong>also practice writing code without them</strong>. Practice typing daily (5 minutes) so it never becomes a barrier to expressing ideas. Treat coding ability like physical fitness: use the tools, but keep the underlying skill sharp.</p>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- CLOUD DEMO -->
+      <div class="sc bl-amber" id="cloud-demo">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico amber">☁️</div>
+            <div>
+              <div class="sc-tag amber">07 · Hands-On</div>
+              <div class="sc-name">AWS &amp; Google Cloud Demo</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <h4>AWS EC2 Demo — Sqoop + Pig on a Real Cluster</h4>
+          <ul>
+            <li>Spun up a pre-built image with <strong>MySQL (Sakila DB)</strong> and Hadoop pre-installed. Sakila = MySQL sample database with fake film-rental data (actors, films, rentals).</li>
+            <li><strong>Sqoop import</strong> of the actor table from MySQL into HDFS — connection string + credentials + table name + target HDFS directory</li>
+            <li>Data lands as multiple flat-file chunks with machine-named files (e.g. <code>part-m-00000</code>) — <strong>four chunks</strong> for the actor table, showing Hadoop's automatic data splitting</li>
+            <li><strong>Pig script</strong> filtered and transformed the actor data, saved output back to HDFS</li>
+            <li><code>wget</code> pulled NYC taxi data (59 MB) from the web into the Linux VM → <code>hdfs dfs -put</code> moved it into HDFS</li>
+            <li>Two terminal windows open to the same machine: one for MySQL, one for Linux/HDFS — illustrating that <strong>the Linux VM is a separate environment from HDFS even on the same machine</strong></li>
+          </ul>
+          <div class="callout">
+            <span class="c-label">Data Flow</span>
+            <p>web / RDBMS → Linux VM → HDFS → Pig / Hive → analysis</p>
+          </div>
+          <h4>Google Cloud — Same Workflow, Managed Services</h4>
+          <table class="dt">
+            <thead><tr><th>Service</th><th>Role</th></tr></thead>
+            <tbody>
+              <tr><td>Google Storage</td><td>Cheap long-term data storage; <strong>no analytics capability on its own</strong></td></tr>
+              <tr><td>BigQuery</td><td>SQL queries + visualizations on millions of rows (impossible in Excel). Data must be <strong>explicitly imported</strong> from Storage before querying.</td></tr>
+              <tr><td>Dataproc</td><td>Google's managed Spark/Hadoop cluster service</td></tr>
+            </tbody>
+          </table>
+          <h4>Dataproc Cluster Setup Walkthrough</h4>
+          <ol>
+            <li>Standard config: <strong>1 master + 2 workers</strong> — the minimum qualifying Hadoop cluster. (High-availability alternative: 3 masters + workers — more powerful, more expensive.)</li>
+            <li>Enable <strong>Jupyter Notebook</strong> component under advanced configuration</li>
+            <li>Enable <strong>cloud platform scope</strong> so the cluster can access Storage buckets</li>
+            <li><strong>Uncheck "internal IP only"</strong> — leaving it checked prevents external login to your own machine</li>
+            <li>Link a <strong>staging bucket</strong> — code and outputs from Spark/Hadoop sessions save to Storage, not the cluster</li>
+            <li><strong>Delete the cluster immediately after use</strong> — data persists in the Storage bucket, so nothing is lost</li>
+          </ol>
+          <div class="callout green">
+            <span class="c-label">Cost Logic — Why Storage and Dataproc Are Separate</span>
+            <p>Storage costs <strong>fractions of a cent per GB per month</strong>. Dataproc nodes cost <strong>~$25/machine/month</strong> — a 10-node cluster is ~$250/month. So: keep data in Storage permanently, spin up Dataproc only when processing is needed, then delete it.</p>
+          </div>
+          <h4>Common Cluster Creation Errors (Hit in Class)</h4>
+          <div class="anom-list">
+            <div class="anom">
+              <span class="anom-b bad">IAM error</span>
+              <div class="anom-text">Compute service account lacks the <strong>"Dataproc Worker" role</strong>. Fix: copy the service account email from the error → IAM → grant "Dataproc Worker".</div>
+            </div>
+            <div class="anom">
+              <span class="anom-b bad">Region mismatch</span>
+              <div class="anom-text">Storage bucket and Dataproc cluster in different regions caused failures for some students. Switching the cluster region (e.g. to US East 1) resolved it in some cases.</div>
+            </div>
+            <div class="anom">
+              <span class="anom-b bad">UI bug</span>
+              <div class="anom-text">Cluster may show <strong>"provisioning" status with no error description</strong> — check the logs for the real detail.</div>
+            </div>
+          </div>
+          <div class="callout amber">
+            <span class="c-label">Morning Session Recap</span>
+            <p>Downloaded 2026 NYC taxi files into Storage and BigQuery — now deleted, replacing with <strong>2019 data</strong> for upcoming SQL exercises. Two-step deletion required: remove files from <strong>Storage</strong> AND drop the table in <strong>BigQuery</strong>.</p>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- EXAM HOOKS -->
+      <div class="divider" id="exam-hooks" style="margin-top:40px">Exam Hooks — Day 2</div>
+
+      <div class="sc bl-amber">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico amber">⭐</div>
+            <div>
+              <div class="sc-tag amber">Quick Reference</div>
+              <div class="sc-name">Things to Know Cold</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <ul>
+            <li><strong>Big data definition</strong>: too large for one machine → needs a cluster. Always true because data growth outpaces hardware.</li>
+            <li><strong>MapReduce vs. Hadoop</strong>: recipe vs. dish. Google invented the algorithm (+ Google File System); Hadoop is the open-source implementation (Yahoo et al.).</li>
+            <li><strong>Replication = 3× by default</strong>, random distribution across nodes → fault tolerance on commodity hardware.</li>
+            <li><strong>Hadoop = disk (slower, any scale) · Spark = distributed RAM (faster, needs enough aggregate RAM)</strong>. Hadoop stays for storage; Spark wins processing.</li>
+            <li><strong>Pig = temporary schema (transform) · Hive = persistent schema (report → BI tools)</strong>. Sqoop ingests from RDBMS. YARN orchestrates in the background.</li>
+            <li><strong>Pipeline order</strong>: Ingest (Sqoop) → Store (HDFS) → Transform (Pig/Spark) → Report (Hive) → Visualize (Tableau/Power BI) → Analyze (ML).</li>
+            <li><strong>No record updates in Hadoop</strong> — transform → new file → delete original. Analysis environment ≠ transaction system.</li>
+            <li><strong>Cost model</strong>: Storage ≈ pennies, cluster ≈ $25/node/month → data lives in Storage, clusters are ephemeral. Delete the cluster after use.</li>
+            <li><strong>Dataproc gotchas</strong>: Dataproc Worker IAM role, region match between bucket and cluster, uncheck internal-IP-only, link a staging bucket.</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <!-- NEXT STEPS -->
+      <div class="divider" id="next-steps">Next Steps</div>
+
+      <div class="sc bl-green">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico green">✅</div>
+            <div>
+              <div class="sc-tag green">Action Items</div>
+              <div class="sc-name">To Do After Class</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <ol>
+            <li><strong>Submit three presentations to Brightspace before end of break</strong> — AI-driven franchise launch, dynamic pricing model, naming rights valuation + ESG</li>
+            <li><strong>Delete 2026 BigQuery tables AND Storage files</strong> (two-step deletion); retain only 2019 NYC taxi data for upcoming SQL exercises</li>
+            <li>Explore AWS and Google Cloud independently — personal accounts, student credits, or employer-covered costs</li>
+            <li>Practice Linux commands using free online resources</li>
+          </ol>
+        </div></div>
+      </div>
+
+    </div><!-- /day2 -->
+
+    <!-- ASSIGNMENTS -->
+    <div id="panel-assignments" class="day-panel">
+      <div class="divider" id="assignments">Assignments &amp; Deadlines</div>
+
+      <div class="assign-card">
+        <div class="ac-ico">✅</div>
+        <div class="ac-b">
+          <div class="ac-label">Pre-module Quiz 1 · 4% <span class="done-badge">✓ done</span></div>
+          <div class="ac-title">GCP Basics</div>
+          <div class="ac-desc">Set up GCP project, navigate console, understand billing.</div>
+          <div class="ac-due">Submitted: <span>Jun 5, 2026</span></div>
+        </div>
+      </div>
+
+      <div class="assign-card">
+        <div class="ac-ico">✅</div>
+        <div class="ac-b">
+          <div class="ac-label">Pre-module Quiz 2 · 8% <span class="done-badge">✓ done</span></div>
+          <div class="ac-title">Google Storage &amp; BigQuery Hands-On</div>
+          <div class="ac-desc">CREATE TABLE AS + GCS export workflow.</div>
+          <div class="ac-due">Submitted: <span>Jun 5, 2026</span></div>
+        </div>
+      </div>
+
+      <div class="assign-card">
+        <div class="ac-ico">🔥</div>
+        <div class="ac-b">
+          <div class="ac-label">Pre-module Quiz 3 · 8%</div>
+          <div class="ac-title">PySpark Hands-On</div>
+          <div class="ac-desc">Dataproc cluster + PySpark job. Remember to DELETE the cluster after — it bills per-minute. Deadline was pushed from Jun 7.</div>
+          <div class="ac-due">Due: <span>July 12, 2026</span></div>
+        </div>
+      </div>
+
+      <div class="assign-card">
+        <div class="ac-ico">🎤</div>
+        <div class="ac-b">
+          <div class="ac-label">In-class · Day 2</div>
+          <div class="ac-title">3× Presentations to Brightspace</div>
+          <div class="ac-desc">AI-driven franchise launch · dynamic pricing model · naming rights valuation + ESG. Submit before end of break.</div>
+          <div class="ac-due">Due: <span>End of break, Jun 9</span></div>
+        </div>
+      </div>
+
+      <div class="assign-card">
+        <div class="ac-ico">📋</div>
+        <div class="ac-b">
+          <div class="ac-label">Post-module quizzes · 75% of grade</div>
+          <div class="ac-title">3× Post-Module Quizzes (25% each)</div>
+          <div class="ac-desc">Available June 13. Three quizzes covering the full Big Data curriculum.</div>
+          <div class="ac-due">Available: <span>Jun 13</span> · Due: <span>Jul 12, 2026</span></div>
+        </div>
+      </div>
+    </div><!-- /assignments -->
+
+  </div><!-- /content -->
+</div><!-- /main -->
 
 <script>
-const KEY = 'notes-unlocked';
-const PWD = 'huncho';
-if (sessionStorage.getItem(KEY) === 'true') {
-  document.getElementById('gate').style.display = 'none';
-  document.getElementById('main').style.display = 'block';
-}
+const KEY = 'notes-unlocked', PWD = 'huncho';
+if (sessionStorage.getItem(KEY) === 'true') unlock();
 document.getElementById('gate-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
 function tryUnlock() {
-  const val = document.getElementById('gate-input').value.trim().toLowerCase();
-  if (val === PWD) {
-    sessionStorage.setItem(KEY, 'true');
-    document.getElementById('gate').style.display = 'none';
-    document.getElementById('main').style.display = 'block';
+  if (document.getElementById('gate-input').value.trim().toLowerCase() === PWD) {
+    sessionStorage.setItem(KEY, 'true'); unlock();
   } else {
     document.getElementById('gate-err').textContent = 'wrong password';
     document.getElementById('gate-input').value = '';
   }
 }
+function unlock() {
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('sidebar').style.display = 'block';
+  document.getElementById('main').style.display = 'block';
+}
+
+function toggle(hdr) { hdr.closest('.sc').classList.toggle('open'); }
+
+document.querySelectorAll('.day-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.day-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+  });
+});
+
+const navLinks = document.querySelectorAll('.sb-nav a[href^="#"]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+    }
+  });
+}, { rootMargin: '-25% 0px -65% 0px' });
+document.querySelectorAll('[id]').forEach(s => observer.observe(s));
 </script>
 </body>
 </html>
