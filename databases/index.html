@@ -7,38 +7,33 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-
 :root {
   --bg:      #0a0f1a;
   --surface: #0e1524;
   --card:    #111829;
-  --border:  rgba(56,189,248,.1);
-  --border-soft: rgba(255,255,255,.06);
+  --border:  #1e2d44;
+  --accent:  #38bdf8;
+  --accent-soft: rgba(56,189,248,.08);
+  --amber:   #fbbf24;
+  --green:   #34d399;
+  --red:     #f87171;
   --text:    #e2eaf5;
   --muted:   #6b8aab;
-  --faint:   #2a3f56;
-  --accent:  #38bdf8;
-  --accent-dim: #0ea5e9;
-  --accent-glow: rgba(56,189,248,.18);
-  --accent-soft: rgba(56,189,248,.08);
-  --warn:    rgba(251,191,36,.08);
-  --warn-border: rgba(251,191,36,.25);
-  --warn-text: #fbbf24;
-  --green-soft: rgba(52,211,153,.08);
-  --green-border: rgba(52,211,153,.2);
-  --green-text: #34d399;
-  --red-soft: rgba(248,113,113,.08);
-  --red-border: rgba(248,113,113,.2);
-  --red-text: #f87171;
+  --faint:   #243044;
+  --sidebar-w: 256px;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 
 body {
   background: var(--bg); color: var(--text);
   font-family: 'Lora', Georgia, serif;
-  min-height: 100vh; display: flex; flex-direction: column;
-  align-items: center; overflow-x: hidden; position: relative;
+  font-size: 16px; line-height: 1.75;
+  display: flex; min-height: 100vh; overflow-x: hidden;
 }
 body::before {
   content: ''; position: fixed; inset: 0;
@@ -46,159 +41,150 @@ body::before {
   background-size: 28px 28px; pointer-events: none; z-index: 0;
 }
 body::after {
-  content: ''; position: fixed; top: -180px; left: 50%; transform: translateX(-50%);
-  width: 900px; height: 350px;
-  background: radial-gradient(ellipse at 50% 50%, rgba(56,189,248,.09) 0%, transparent 60%);
+  content: ''; position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 400px;
+  background: radial-gradient(ellipse, rgba(56,189,248,.07) 0%, transparent 70%);
   pointer-events: none; z-index: 0;
 }
 
 /* ── GATE ── */
 #gate { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-.gate-box { background: var(--surface); border: 1px solid var(--border-soft); border-radius: 16px; padding: 40px 44px; max-width: 360px; width: 90%; text-align: center; }
+.gate-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px 44px; max-width: 360px; width: 90%; text-align: center; }
 .gate-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
-.gate-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); margin-bottom: 24px; line-height: 1.3; }
-.gate-input { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-soft); background: var(--card); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: .08em; outline: none; text-align: center; transition: border-color .2s; }
+.gate-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); margin-bottom: 24px; }
+.gate-input { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: .08em; outline: none; text-align: center; transition: border-color .2s; }
 .gate-input:focus { border-color: var(--accent); }
 .gate-btn { margin-top: 12px; width: 100%; padding: 10px; border-radius: 8px; border: none; cursor: pointer; background: var(--accent); color: #0a0f1a; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; transition: opacity .2s; }
 .gate-btn:hover { opacity: .85; }
-.gate-err { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #f87171; margin-top: 10px; min-height: 16px; }
+.gate-err { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--red); margin-top: 10px; min-height: 16px; }
 
-/* ── WRAPPER ── */
-.wrapper { width: 100%; max-width: 860px; padding: 64px 28px 96px; position: relative; z-index: 1; }
-
-.back-nav { display: inline-flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); text-decoration: none; letter-spacing: .06em; margin-bottom: 36px; opacity: .75; transition: opacity .2s, color .2s; }
-.back-nav:hover { opacity: 1; color: var(--accent); }
-
-.course-pill { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); border: 1px solid rgba(56,189,248,.2); border-radius: 20px; padding: 4px 14px; display: inline-block; margin-bottom: 20px; }
-.page-title { font-family: 'DM Serif Display', serif; font-size: clamp(32px,5vw,48px); line-height: 1.15; color: var(--text); margin-bottom: 8px; }
-.page-title em { font-style: italic; color: var(--accent); }
-.page-sub { font-size: 15px; color: var(--muted); font-style: italic; margin-bottom: 24px; }
-.meta-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 52px; }
-.meta-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); background: var(--surface); border: 1px solid var(--border-soft); border-radius: 6px; padding: 5px 12px; }
-.meta-chip.hi { color: var(--accent); background: var(--accent-soft); border-color: rgba(56,189,248,.2); }
-
-/* ── SECTION ── */
-.section { margin-bottom: 56px; }
-.section-label { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin-bottom: 16px; padding-left: 2px; }
-
-/* ── DAY HEADER ── */
-.day-header {
-  display: flex; align-items: center; gap: 14px;
-  margin-bottom: 24px;
+/* ── SIDEBAR ── */
+#sidebar {
+  position: fixed; top: 0; left: 0;
+  width: var(--sidebar-w); height: 100vh;
+  background: rgba(10,15,26,.97); border-right: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  overflow-y: auto; overflow-x: hidden;
+  z-index: 100; padding: 24px 0 40px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
 }
-.day-badge {
-  font-family: 'JetBrains Mono', monospace; font-size: 10px;
-  letter-spacing: .14em; text-transform: uppercase;
-  background: var(--accent-soft); color: var(--accent);
-  border: 1px solid rgba(56,189,248,.2);
-  border-radius: 20px; padding: 4px 12px; white-space: nowrap;
-}
-.day-rule { flex: 1; height: 1px; background: var(--border-soft); }
+.sb-brand { padding: 0 18px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.sb-badge { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); border: 1px solid rgba(56,189,248,.25); border-radius: 4px; padding: 3px 8px; margin-bottom: 8px; }
+.sb-title { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--text); line-height: 1.3; }
+.sb-sub { font-size: 12px; color: var(--muted); margin-top: 3px; font-style: italic; }
+.sb-group { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); padding: 14px 18px 5px; }
+.sb-nav a { display: flex; align-items: center; gap: 9px; padding: 7px 18px; text-decoration: none; font-size: 13px; color: var(--muted); transition: color .15s, background .15s; border-left: 2px solid transparent; }
+.sb-nav a:hover { color: var(--text); background: rgba(255,255,255,.03); }
+.sb-nav a.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-soft); }
+.sb-nav .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--faint); flex-shrink: 0; transition: background .15s; }
+.sb-nav a.active .dot { background: var(--accent); }
+.sb-back-row { margin-top: 24px; border-top: 1px solid var(--border); }
+.sb-back-row a { display: flex; align-items: center; gap: 8px; padding: 14px 18px 0; text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); opacity: .6; transition: opacity .2s; }
+.sb-back-row a:hover { opacity: 1; }
 
-/* ── NOTE CARD ── */
-.nc {
-  background: var(--card); border: 1px solid var(--border-soft);
-  border-radius: 14px; padding: 26px 28px; margin-bottom: 14px;
-  border-left: 3px solid var(--accent);
-}
-.nc-label {
-  font-family: 'JetBrains Mono', monospace; font-size: 9.5px;
-  letter-spacing: .16em; text-transform: uppercase;
-  color: var(--accent); margin-bottom: 9px;
-}
-.nc-title {
-  font-family: 'DM Serif Display', serif; font-size: 22px;
-  color: var(--text); margin-bottom: 14px; line-height: 1.25;
-}
-.nc-body { font-size: 14.5px; color: var(--muted); line-height: 1.72; }
-.nc-body p { margin-bottom: 10px; }
-.nc-body p:last-child { margin-bottom: 0; }
-.nc-body strong, .nc-body b { color: var(--text); font-weight: 600; }
-.nc-body em { font-style: italic; color: var(--accent); }
+/* ── MAIN ── */
+#main { margin-left: var(--sidebar-w); flex: 1; position: relative; z-index: 1; }
 
-/* ── NUMBERED STEPS ── */
-.steps { list-style: none; margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
-.steps li { display: flex; gap: 12px; font-size: 14px; color: var(--muted); line-height: 1.6; }
-.step-num {
-  flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
-  background: var(--accent-soft); border: 1px solid rgba(56,189,248,.2);
-  color: var(--accent); font-family: 'JetBrains Mono', monospace;
-  font-size: 10px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-  margin-top: 2px;
-}
+/* ── HEADER ── */
+#hdr { padding: 48px 56px 32px; border-bottom: 1px solid var(--border); }
+.hdr-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.hdr-title { font-family: 'DM Serif Display', serif; font-size: 42px; color: var(--text); line-height: 1.15; margin-bottom: 6px; }
+.hdr-title span { color: var(--accent); }
+.hdr-sub { color: var(--muted); font-size: 15px; margin-bottom: 28px; font-style: italic; }
+.day-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.day-tab { padding: 8px 20px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .07em; cursor: pointer; border: 1px solid var(--border); color: var(--muted); background: transparent; transition: all .2s; }
+.day-tab:hover { color: var(--text); border-color: var(--accent); }
+.day-tab.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 
-/* ── ANOMALY ROW ── */
-.anomaly-row { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
-.anomaly {
-  background: var(--surface); border: 1px solid var(--border-soft);
-  border-radius: 10px; padding: 14px 16px;
-  display: flex; gap: 12px; align-items: flex-start;
-}
-.anom-badge {
-  flex-shrink: 0; font-family: 'JetBrains Mono', monospace;
-  font-size: 9px; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--red-text); background: var(--red-soft);
-  border: 1px solid var(--red-border); border-radius: 6px;
-  padding: 3px 8px; margin-top: 2px; white-space: nowrap;
-}
-.anom-body { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
-.anom-body strong { color: var(--text); }
+/* ── CONTENT ── */
+#content { padding: 36px 56px 80px; }
+.day-panel { display: none; }
+.day-panel.active { display: block; }
 
-/* ── KEY BOX ── */
-.key-box {
-  background: var(--warn); border: 1px solid var(--warn-border);
-  border-radius: 10px; padding: 14px 16px; margin-top: 14px;
-  font-size: 13.5px; color: var(--muted); line-height: 1.65;
+/* ── SECTION CARD ── */
+.sc {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; margin-bottom: 16px; overflow: hidden;
+  transition: box-shadow .2s, transform .18s;
+  animation: fadeUp .45s cubic-bezier(.16,1,.3,1) both;
 }
-.key-box strong { color: var(--warn-text); }
+.sc:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,.35); }
+.sc.bl-accent { border-left: 3px solid var(--accent); }
+.sc.bl-amber  { border-left: 3px solid var(--amber); }
+.sc.bl-green  { border-left: 3px solid var(--green); }
 
-.good-box {
-  background: var(--green-soft); border: 1px solid var(--green-border);
-  border-radius: 10px; padding: 14px 16px; margin-top: 14px;
-  font-size: 13.5px; color: var(--muted); line-height: 1.65;
-}
-.good-box strong { color: var(--green-text); }
+.sc-hdr { padding: 20px 24px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 16px; user-select: none; transition: background .15s; }
+.sc-hdr:hover { background: rgba(255,255,255,.02); }
+.sc-hdr-l { display: flex; align-items: center; gap: 14px; }
+.sc-ico { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; background: var(--accent-soft); border: 1px solid rgba(56,189,248,.2); }
+.sc-ico.amber { background: rgba(251,191,36,.1); border-color: rgba(251,191,36,.2); }
+.sc-ico.green { background: rgba(52,211,153,.1); border-color: rgba(52,211,153,.2); }
+.sc-tag { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); margin-bottom: 3px; }
+.sc-tag.amber { color: var(--amber); }
+.sc-tag.green { color: var(--green); }
+.sc-name { font-family: 'DM Serif Display', serif; font-size: 19px; color: var(--text); line-height: 1.25; }
+.chevron { color: var(--muted); transition: transform .25s; font-size: 14px; flex-shrink: 0; opacity: .7; }
+.sc.open .chevron { transform: rotate(180deg); }
 
-/* ── INLINE CODE ── */
-code {
-  font-family: 'JetBrains Mono', monospace; font-size: 12px;
-  background: rgba(56,189,248,.08); color: var(--accent);
-  border-radius: 4px; padding: 1px 5px;
-}
+.sc-body { max-height: 0; overflow: hidden; transition: max-height .4s ease, opacity .3s ease; opacity: 0; }
+.sc.open .sc-body { max-height: 4000px; opacity: 1; }
+.sc-in { padding: 4px 28px 28px 80px; border-top: 1px solid var(--border); }
 
-/* ── CONCEPT TABLE ── */
-.concept-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 13px; }
-.concept-table th {
-  font-family: 'JetBrains Mono', monospace; font-size: 9.5px;
-  letter-spacing: .14em; text-transform: uppercase; color: var(--faint);
-  padding: 8px 12px; border-bottom: 1px solid var(--border-soft);
-  text-align: left; font-weight: 600;
-}
-.concept-table td { padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,.03); color: var(--muted); vertical-align: top; line-height: 1.55; }
-.concept-table td:first-child { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: nowrap; }
-.concept-table td strong { color: var(--text); }
-.concept-table tr:last-child td { border-bottom: 0; }
+/* ── PROSE ── */
+.sc-in p { margin-bottom: 14px; color: rgba(226,234,245,.88); }
+.sc-in p:last-child { margin-bottom: 0; }
+.sc-in strong, .sc-in b { color: var(--text); font-weight: 600; }
+.sc-in em { color: var(--accent); font-style: italic; }
+.sc-in ul { padding-left: 20px; margin-bottom: 14px; color: rgba(226,234,245,.85); }
+.sc-in li { margin-bottom: 7px; }
+.sc-in li::marker { color: var(--accent); }
+.sc-in ol { list-style: none; padding-left: 0; margin-bottom: 14px; counter-reset: step; }
+.sc-in ol li { counter-increment: step; display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; color: rgba(226,234,245,.85); }
+.sc-in ol li::before { content: counter(step); flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-soft); border: 1px solid rgba(56,189,248,.2); color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.sc-in h4 { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--text); margin: 22px 0 9px; padding-bottom: 5px; border-bottom: 1px solid var(--border); }
 
-/* ── EXAM HOOKS ── */
-.hooks-grid { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
-.hook {
-  background: var(--surface); border: 1px solid var(--border-soft);
-  border-radius: 8px; padding: 11px 14px;
-  display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; color: var(--muted); line-height: 1.55;
-}
-.hook::before { content: '⭐'; font-size: 12px; flex-shrink: 0; margin-top: 1px; }
-.hook strong { color: var(--text); }
+/* ── CALLOUT ── */
+.callout { background: var(--accent-soft); border: 1px solid rgba(56,189,248,.2); border-radius: 9px; padding: 15px 18px; margin: 16px 0; }
+.callout.amber { background: rgba(251,191,36,.08); border-color: rgba(251,191,36,.22); }
+.callout.green { background: rgba(52,211,153,.07); border-color: rgba(52,211,153,.22); }
+.c-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 7px; }
+.callout.amber .c-label { color: var(--amber); }
+.callout.green .c-label { color: var(--green); }
+.callout p { color: rgba(226,234,245,.88); margin: 0; font-size: 14.5px; line-height: 1.65; }
 
-/* ── ASSIGNMENT CARD ── */
-.assignment-card { background: var(--surface); border: 1px solid var(--border-soft); border-radius: 12px; padding: 22px 24px; margin-bottom: 12px; display: flex; gap: 18px; align-items: flex-start; }
-.ac-badge { flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); border: 1px solid rgba(56,189,248,.2); display: flex; align-items: center; justify-content: center; font-size: 16px; }
-.ac-body { flex: 1; }
-.ac-label { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
-.ac-title { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--text); margin-bottom: 4px; }
-.ac-desc { font-size: 13px; color: var(--muted); line-height: 1.55; }
+/* ── ANOMALY LIST ── */
+.anom-list { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+.anom { background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
+.anom-b { flex-shrink: 0; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; border-radius: 5px; padding: 3px 8px; margin-top: 2px; white-space: nowrap; }
+.anom-b.bad { color: var(--red); background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.2); }
+.anom-b.ok  { color: var(--green); background: rgba(52,211,153,.1); border: 1px solid rgba(52,211,153,.2); }
+.anom-text { font-size: 14.5px; color: rgba(226,234,245,.82); line-height: 1.65; }
+.anom-text strong { color: var(--text); }
+
+/* ── TABLE ── */
+.dt { width: 100%; border-collapse: collapse; font-size: 14px; margin: 14px 0; }
+.dt th { background: var(--accent-soft); color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+.dt td { padding: 10px 14px; border-bottom: 1px solid rgba(30,45,68,.6); color: rgba(226,234,245,.82); vertical-align: top; line-height: 1.55; }
+.dt td:first-child { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: nowrap; }
+.dt td strong { color: var(--text); }
+.dt tr:last-child td { border-bottom: 0; }
+.dt tr:hover td { background: rgba(56,189,248,.03); }
+
+code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: rgba(56,189,248,.09); color: var(--accent); border-radius: 4px; padding: 1px 6px; }
+
+/* ── ASSIGNMENTS ── */
+.assign-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; margin-bottom: 12px; display: flex; gap: 18px; align-items: flex-start; }
+.ac-ico { flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); border: 1px solid rgba(56,189,248,.2); display: flex; align-items: center; justify-content: center; font-size: 17px; }
+.ac-b { flex: 1; }
+.ac-label { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
+.ac-title { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--text); margin-bottom: 4px; }
+.ac-desc { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
 .ac-due { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); margin-top: 8px; }
 .ac-due span { color: var(--accent); }
+
+.divider { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin: 32px 0 14px; padding-left: 2px; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
@@ -213,294 +199,442 @@ code {
   </div>
 </div>
 
-<div id="main" style="display:none; width:100%;">
-<div class="wrapper">
-
-  <a class="back-nav" href="../">← Module 2 hub</a>
-
-  <div class="course-pill">DB · Mon Jun 8</div>
-  <h1 class="page-title">Databases for<br /><em>Business Analytics</em></h1>
-  <p class="page-sub">Prof. Panos Ipeirotis · 1.5 credits · ERDPlus + BigQuery</p>
-
-  <div class="meta-row">
-    <span class="meta-chip hi">Mon Jun 8</span>
-    <span class="meta-chip">ERDPlus</span>
-    <span class="meta-chip">Google BigQuery</span>
-    <span class="meta-chip">SQL</span>
-    <span class="meta-chip">GCP · nyu-datasets</span>
+<nav id="sidebar" style="display:none">
+  <div class="sb-brand">
+    <div class="sb-badge">DB · Module 2</div>
+    <div class="sb-title">Databases for<br>Business Analytics</div>
+    <div class="sb-sub">Prof. Panos Ipeirotis</div>
   </div>
 
-  <!-- ── LECTURE NOTES ──────────────────────────────── -->
-  <div class="section">
-    <div class="section-label">Lecture Notes</div>
-
-    <div class="day-header">
-      <span class="day-badge">Day 1 · Mon Jun 8</span>
-      <div class="day-rule"></div>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--faint);white-space:nowrap;">Module 1 — ER Model &amp; Relational Schemas (slides A1–A5)</span>
-    </div>
-
-    <!-- WHY DATABASES -->
-    <div class="nc">
-      <div class="nc-label">A1 · Motivation</div>
-      <div class="nc-title">Why Databases? The Case Against Spreadsheets</div>
-      <div class="nc-body">
-        <p><strong>The Greece story (the best example):</strong> In 1995, the Greek government computerized pension records. Convention: enter <code>999999999</code> as a placeholder for unknown pension amounts. When Greece converted to the Euro in 2001, those fake numbers became real-looking €100M+ receivables per pension. By 2008, the system showed a 15.5% GDP annual deficit — governments fell, politicians promised to "collect billions from big debtors." Reality: over <strong>€3 billion in fake receivables</strong> from old data entry placeholders. Root cause: accumulated fake/placeholder data completely disconnected from its original context.</p>
-        <p><strong>The problem:</strong> Storing everything in one giant flat table — orders, customers, books all mixed together — creates a minefield of errors. Three fundamental anomalies:</p>
-      </div>
-      <div class="anomaly-row">
-        <div class="anomaly">
-          <span class="anom-badge">Insertion</span>
-          <div class="anom-body"><strong>Can't add info without inventing fake data.</strong> Can't add a new book to the catalog until someone orders it — a book only exists as part of an order row. You end up filling required fields with XXX, 999999, placeholder values.</div>
-        </div>
-        <div class="anomaly">
-          <span class="anom-badge">Deletion</span>
-          <div class="anom-body"><strong>Deleting one thing accidentally destroys another.</strong> Customer Lee Sproull only appears on Order #2. Delete that order → their name, ID, address are gone forever from the entire database.</div>
-        </div>
-        <div class="anomaly">
-          <span class="anom-badge">Update</span>
-          <div class="anom-body"><strong>Same fact lives in multiple rows — update some, miss others → contradictions.</strong> Jeff Bezos's address appears on Orders #1, #6, #8. Update one → now three different addresses for the same person. Classic customer service nightmare: "We have your old address in billing, different from the main system."</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- NORMALIZATION -->
-    <div class="nc">
-      <div class="nc-label">A1 · Solution</div>
-      <div class="nc-title">Database Normalization</div>
-      <div class="nc-body">
-        <p><strong>Goal: one single authoritative source of truth for every piece of data.</strong> Stop storing one giant list. Split into distinct logical entities — Customers, Books, Orders — and link them with keys.</p>
-        <p>How normalization solves each anomaly:</p>
-      </div>
-      <div class="anomaly-row">
-        <div class="anomaly">
-          <span class="anom-badge" style="color:var(--green-text);background:var(--green-soft);border-color:var(--green-border);">Insertion ✓</span>
-          <div class="anom-body">Add a new book to the <em>Book</em> table anytime — no fake order needed. Books exist independently.</div>
-        </div>
-        <div class="anomaly">
-          <span class="anom-badge" style="color:var(--green-text);background:var(--green-soft);border-color:var(--green-border);">Deletion ✓</span>
-          <div class="anom-body">Delete an order → customer record survives in the <em>Customer</em> table, completely untouched.</div>
-        </div>
-        <div class="anomaly">
-          <span class="anom-badge" style="color:var(--green-text);background:var(--green-soft);border-color:var(--green-border);">Update ✓</span>
-          <div class="anom-body">Change Bezos's address in ONE place (his Customer row). Every order automatically reflects it — they all point to the same Customer ID.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ERD VOCAB -->
-    <div class="nc">
-      <div class="nc-label">A2 · ERD Fundamentals</div>
-      <div class="nc-title">Entities, Attributes &amp; Primary Keys</div>
-      <div class="nc-body">
-        <p><strong>Entity</strong> = a thing we want to store information about (drawn as a rectangle). Examples: Students, Courses, Products. Each entity becomes a table in the final database. An <em>instance</em> is one row — e.g. ("Daivik", "Suresh", 2001, "M").</p>
-        <p><strong>Attribute</strong> = a property of an entity (drawn as an oval). Each attribute has a <strong>domain</strong> — the set of valid values. Domain restrictions are your <em>first defense against bad data</em>:</p>
-        <ul style="margin: 8px 0 0 18px; font-size: 14px; color: var(--muted); line-height: 2;">
-          <li>Year of birth: integer between 1940–2010 (not 99, not 0.5)</li>
-          <li>Gender: restricted set <code>ENUM('M','F')</code> — not free text like "male"/"men"</li>
-        </ul>
-        <p style="margin-top: 12px;"><strong>Primary Key (PK)</strong> = the attribute that uniquely identifies each instance. Two rules:</p>
-      </div>
-      <ol class="steps">
-        <li><span class="step-num">1</span><span>No two instances share the same PK value (uniqueness)</span></li>
-        <li><span class="step-num">2</span><span>Each instance has exactly one PK value (not null, not multiple)</span></li>
-      </ol>
-      <div class="nc-body" style="margin-top: 12px;">
-        <p><strong>Composite PK:</strong> sometimes uniqueness only holds when combining two attributes together. Examples: (CourseID + SectionNumber), (BuildingAddress + ApartmentNumber), (AlbumID + TrackNumber).</p>
-      </div>
-    </div>
-
-    <!-- PRIMARY KEY DESIGN -->
-    <div class="nc">
-      <div class="nc-label">A3 · Primary Key Design</div>
-      <div class="nc-title">Choosing a Good PK — and Why Most Natural Keys Fail</div>
-      <div class="nc-body">
-        <p><strong>Rule: generate your own unique identifiers. Don't use someone else's primary key.</strong></p>
-        <p>Common candidates and their fatal flaws:</p>
-      </div>
-      <table class="concept-table">
-        <thead><tr><th>Candidate</th><th>Why it fails</th></tr></thead>
-        <tbody>
-          <tr><td>SSN</td><td>Not everyone has one → fake SSNs for international students. <strong>Real disaster:</strong> universities used SSN as student ID. International students got fake SSNs, later got real ones — now two records, courses split between them.</td></tr>
-          <tr><td>Credit card</td><td>Identifies an <em>account</em>, not a person. One person has multiple cards.</td></tr>
-          <tr><td>Passport number</td><td>Expires. People get new ones over a lifetime → same person, different key.</td></tr>
-          <tr><td>Email address</td><td>People change emails, forget old accounts → same person, multiple records.</td></tr>
-        </tbody>
-      </table>
-      <div class="good-box"><strong>Best practice:</strong> auto-generate a surrogate key (StudentID, CustomerID, etc.) — stable, internal, never exposed to external systems. Assign it once and never change it.</div>
-    </div>
-
-    <!-- RELATIONSHIPS & CARDINALITY -->
-    <div class="nc">
-      <div class="nc-label">A2 · Relationships</div>
-      <div class="nc-title">Relationships, Cardinality &amp; Crow's Foot Notation</div>
-      <div class="nc-body">
-        <p><strong>Relationship</strong> = an association between entities, named with a verb. Example: Student <em>enrolls in</em> Course.</p>
-        <p><strong>Relationship attributes</strong> = properties that belong to the connection itself, not to either entity alone. Example: the "Enrolls" relationship carries <em>Semester</em> and <em>Grade</em> — not a property of Student (takes many courses) or Course (has many students).</p>
-        <p><strong>Cardinality = how many instances can participate on each side.</strong> Two dimensions: minimum (participation) and maximum (key constraint).</p>
-        <p style="margin-top: 10px;"><strong>Three relationship types:</strong></p>
-        <ul style="margin: 6px 0 0 18px; font-size: 14px; color: var(--muted); line-height: 2.2;">
-          <li><strong>One-to-one (1:1)</strong> — each office max one advisor, each advisor max one office</li>
-          <li><strong>One-to-many (1:N)</strong> — one advisor has many students, each student has one advisor</li>
-          <li><strong>Many-to-many (M:N)</strong> — students take many courses, each course has many students</li>
-        </ul>
-        <p style="margin-top: 14px;"><strong>Crow's Foot Notation</strong> — used in ERDPlus. Two symbols on each end of the line:</p>
-        <ul style="margin: 6px 0 12px 18px; font-size: 13.5px; color: var(--muted); line-height: 2;">
-          <li><strong>Inner symbol = minimum</strong> — pipe <code>|</code> = mandatory (min 1); circle <code>○</code> = optional (min 0)</li>
-          <li><strong>Outer symbol = maximum</strong> — pipe <code>|</code> = one; crow's foot <code>⟨</code> = many</li>
-        </ul>
-      </div>
-      <table class="concept-table">
-        <thead><tr><th>Symbol combo</th><th>Reading</th><th>Example</th></tr></thead>
-        <tbody>
-          <tr><td><code>||</code></td><td><strong>Exactly one, mandatory</strong></td><td>A professor must have exactly one office</td></tr>
-          <tr><td><code>|⟨</code></td><td><strong>One or more, mandatory</strong></td><td>A department must have ≥1 instructor</td></tr>
-          <tr><td><code>○⟨</code></td><td><strong>Zero or more, optional</strong></td><td>A course may have 0 to many students enrolled</td></tr>
-          <tr><td><code>○|</code></td><td><strong>Zero or one, optional</strong></td><td>A student may have 0 or 1 university email</td></tr>
-        </tbody>
-      </table>
-      <div class="key-box"><strong>Design balance:</strong> too rigid = blocks legitimate edge cases. Too flexible = "anything goes" → data chaos. Common startup pattern: MongoDB first (fast, flexible), then migrate to structured DB after 2–3 years when analytics becomes critical. Timeline: success → need analytics → discover data is an unorganized mess → year-long cleanup project.</div>
-    </div>
-
-    <!-- ERD → RELATIONAL SCHEMA -->
-    <div class="nc">
-      <div class="nc-label">A3 · Core Algorithm ⭐</div>
-      <div class="nc-title">ERD → Relational Schema Translation</div>
-      <div class="nc-body">
-        <p>This is a <strong>mechanical, step-by-step process</strong>. ERDPlus can auto-generate it once the ERD is complete.</p>
-      </div>
-      <ol class="steps" style="margin-bottom: 16px;">
-        <li><span class="step-num">0</span><span><strong>Check completeness</strong> — every entity has attributes + PK; every relationship has cardinalities on both sides.</span></li>
-        <li><span class="step-num">1</span><span><strong>Entities → tables</strong> — one table per entity. Attributes become columns. PK stays PK.</span></li>
-        <li><span class="step-num">2</span><span><strong>One-to-many → FK on the "many" side</strong> — add a foreign key column to the "many" table pointing to the PK of the "one" table. If participation is mandatory (min=1), make FK <code>NOT NULL</code>.</span></li>
-        <li><span class="step-num">3</span><span><strong>One-to-one → FK on either side</strong> (or merge both tables). Add <code>UNIQUE</code> to enforce max cardinality of 1.</span></li>
-        <li><span class="step-num">4</span><span><strong>Many-to-many → bridge table</strong> — create a new junction table. Its PK is usually the composite of both entities' PKs. Relationship attributes live here.</span></li>
-      </ol>
-      <div class="key-box"><strong>Mnemonic for constraints:</strong> <code>NOT NULL</code> = mandatory participation (min = 1). <code>UNIQUE</code> = max cardinality of 1 (enforces 1:1). Remember this for the final exam.</div>
-    </div>
-
-    <!-- BRIDGE TABLES -->
-    <div class="nc">
-      <div class="nc-label">A3–A4 · M:N relationships</div>
-      <div class="nc-title">Bridge Tables — "Bread and Butter of Most Database Systems"</div>
-      <div class="nc-body">
-        <p>Every many-to-many relationship requires a <strong>bridge table</strong> (also called junction table, associative table). You cannot put a FK on either side — it would require storing a list of values in one cell, which breaks normalization.</p>
-        <p><strong>Painter example:</strong> Painting can be owned by many people, Person can own many paintings.</p>
-        <table class="concept-table" style="margin-top: 8px;">
-          <thead><tr><th>Table</th><th>Columns</th></tr></thead>
-          <tbody>
-            <tr><td>Painter</td><td><strong>PainterID</strong>, Name, DOB</td></tr>
-            <tr><td>Painting</td><td><strong>PaintingID</strong>, Name, <em>PainterID FK</em>, <em>GalleryID FK</em></td></tr>
-            <tr><td>Owner</td><td><strong>PersonID</strong>, Name, Address</td></tr>
-            <tr><td>Buys <em>(bridge)</em></td><td><strong>TransactionID</strong>, PurchaseDate, Amount, <em>OwnerID FK</em>, <em>PaintingID FK</em></td></tr>
-          </tbody>
-        </table>
-        <p style="margin-top: 14px;"><strong>Employee/Department/Job example:</strong> Employee works in one Department (1:N → FK in Employee table). Employee does many Jobs, Job has many Employees (M:N → bridge table).</p>
-        <table class="concept-table" style="margin-top: 8px;">
-          <thead><tr><th>Table</th><th>Columns</th></tr></thead>
-          <tbody>
-            <tr><td>Department</td><td><strong>DeptNum</strong>, DeptName</td></tr>
-            <tr><td>Employee</td><td><strong>ID</strong>, Name, <em>DeptNum FK</em></td></tr>
-            <tr><td>Job</td><td><strong>JobNum</strong>, JobName</td></tr>
-            <tr><td>JobAssignment <em>(bridge)</em></td><td><strong>EmpID FK</strong> + <strong>JobNum FK</strong> = composite PK, Hours</td></tr>
-          </tbody>
-        </table>
-        <p style="margin-top: 12px;"><strong>Key insight on "derived" data:</strong> <em>Number of Employees</em> per department — <strong>do NOT store this</strong>. It can always be computed with <code>COUNT()</code>. Storing it reintroduces update anomalies. <em>Hours Worked</em> on a job = a relationship attribute → goes in the bridge table, not in Employee or Job.</p>
-      </div>
-    </div>
-
-    <!-- SQL DDL INTRO -->
-    <div class="nc">
-      <div class="nc-label">A5 · SQL DDL</div>
-      <div class="nc-title">Creating Tables — Basic DDL Syntax</div>
-      <div class="nc-body">
-        <p>Once the relational schema is finalized, ERDPlus can auto-generate the <code>CREATE TABLE</code> SQL. Know the key clauses:</p>
-        <table class="concept-table" style="margin-top: 8px;">
-          <thead><tr><th>Constraint</th><th>What it enforces</th></tr></thead>
-          <tbody>
-            <tr><td><code>PRIMARY KEY(col)</code></td><td>Unique identifier — no duplicates, no nulls</td></tr>
-            <tr><td><code>NOT NULL</code></td><td>Mandatory participation — min cardinality = 1</td></tr>
-            <tr><td><code>UNIQUE</code></td><td>Max cardinality = 1 (enforces 1:1 relationships)</td></tr>
-            <tr><td><code>FOREIGN KEY(col) REFERENCES Table(pk)</code></td><td>DB rejects rows pointing to non-existent PKs — second defense against bad data</td></tr>
-          </tbody>
-        </table>
-        <p style="margin-top: 12px;"><strong>ERDPlus workflow:</strong> Add all entities + attributes + PKs → add all relationships + cardinalities → Main Menu → <em>Convert to Relational Schema</em> → check everything looks right → <em>Convert to SQL</em> → fine-tune data types. Use <strong>erdplus-old.com</strong> (the old version is what's used in class).</p>
-      </div>
-    </div>
-
+  <div class="sb-group">Day 1 — Jun 8</div>
+  <div class="sb-nav">
+    <a href="#why-db"><span class="dot"></span>Why Databases?</a>
+    <a href="#normalization"><span class="dot"></span>Normalization</a>
+    <a href="#erd-basics"><span class="dot"></span>ERD Fundamentals</a>
+    <a href="#pk-design"><span class="dot"></span>Primary Key Design</a>
+    <a href="#cardinality"><span class="dot"></span>Relationships &amp; Cardinality</a>
+    <a href="#schema-algo"><span class="dot"></span>ERD → Schema Algorithm</a>
+    <a href="#bridge-tables"><span class="dot"></span>Bridge Tables</a>
+    <a href="#ddl"><span class="dot"></span>SQL DDL Basics</a>
   </div>
 
-  <!-- ── EXAM HOOKS ──────────────────────────────────── -->
-  <div class="section">
-    <div class="section-label">Exam Hooks — Module 1</div>
-    <div class="hooks-grid">
-      <div class="hook">Name and define the <strong>3 anomalies</strong> with an example each (insertion → fake data, deletion → destroying unrelated info, update → same fact in multiple rows).</div>
-      <div class="hook">Read a <strong>Crow's Foot diagram</strong> and state the min/max on both sides in plain English. Inner symbol = min, outer symbol = max.</div>
-      <div class="hook"><strong>ERD → relational schema</strong>: 1:N → FK on the "many" side; M:N → bridge table with composite key; 1:1 → FK on either side + UNIQUE.</div>
-      <div class="hook">Know the difference between a <strong>stored attribute</strong> (num employees) vs a <strong>derived attribute</strong> (COUNT) — never store what you can compute. And where <strong>relationship attributes</strong> live (in the bridge table, not in either entity).</div>
-      <div class="hook">Choose a good PK: stable, surrogate, self-generated. Be ready to <strong>reject SSN/phone/email/passport</strong> with a reason.</div>
-      <div class="hook"><strong>NOT NULL = mandatory participation</strong> (min = 1). <strong>UNIQUE = max cardinality of 1</strong> (1:1 enforcement).</div>
+  <div class="sb-group">Reference</div>
+  <div class="sb-nav">
+    <a href="#exam-hooks"><span class="dot"></span>Exam Hooks</a>
+    <a href="#assignments"><span class="dot"></span>Assignments</a>
+  </div>
+
+  <div class="sb-back-row">
+    <a href="../">← Module 2 hub</a>
+  </div>
+</nav>
+
+<div id="main" style="display:none">
+
+  <div id="hdr">
+    <div class="hdr-eyebrow">NYU Stern · MSBAi · Module 2 · Databases</div>
+    <h1 class="hdr-title">Databases for <span>Business Analytics</span></h1>
+    <p class="hdr-sub">Prof. Panos Ipeirotis · ERDPlus · BigQuery · SQL · 1.5 credits</p>
+    <div class="day-tabs">
+      <button class="day-tab active" data-panel="day1">Day 1 — Mon Jun 8</button>
+      <button class="day-tab" data-panel="assignments">Assignments</button>
     </div>
   </div>
 
-  <!-- ── ASSIGNMENTS ──────────────────────────────────── -->
-  <div class="section">
-    <div class="section-label">Assignments & Deadlines</div>
+  <div id="content">
 
-    <div class="assignment-card">
-      <div class="ac-badge">☁️</div>
-      <div class="ac-body">
-        <div class="ac-label">Pre-module · 5%</div>
-        <div class="ac-title">GCP + BigQuery Setup</div>
-        <div class="ac-desc">Create GCP project (org = nyu.edu), enable $300 billing trial, star <code>nyu-datasets</code>, run <code>SELECT * FROM `nyu-datasets.citibike.m_dataset` LIMIT 1000</code>. Submit one screenshot of query results + starred dataset in Explorer.</div>
-        <div class="ac-due">Due: <span>Before in-person week</span></div>
+    <!-- DAY 1 -->
+    <div id="panel-day1" class="day-panel active">
+
+      <div class="divider">Module 1 — ER Model &amp; Relational Schemas (A1–A5)</div>
+
+      <!-- WHY DATABASES -->
+      <div class="sc bl-accent open" id="why-db">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico">📊</div>
+            <div>
+              <div class="sc-tag">A1 · Motivation</div>
+              <div class="sc-name">Why Databases? The Case Against Spreadsheets</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <div class="callout amber">
+            <span class="c-label">Real-World Story — The Greece Pension Disaster</span>
+            <p>In 1995, Greece computerized pension records. Convention: enter <code>999999999</code> as a placeholder for unknown amounts. When Greece converted to the Euro in 2001, those placeholders became real-looking €100M+ receivables per pension. By 2008, the system showed a 15.5% GDP annual deficit. Politicians promised to "collect billions from big debtors." Reality: <strong>over €3 billion in fake receivables</strong> — all from forgotten placeholder values in a flat database with no constraints and no single source of truth.</p>
+          </div>
+          <p>The root issue isn't a technology problem — it's a data architecture problem. Storing everything in one giant flat table (orders, customers, books all jammed together) creates three structural failure modes called <strong>data anomalies</strong>:</p>
+          <div class="anom-list">
+            <div class="anom">
+              <span class="anom-b bad">Insertion</span>
+              <div class="anom-text"><strong>Can't add information without inventing fake data.</strong> A new book can't be added to the catalog until someone places an order — books only exist as part of order rows. Gaps in required fields get filled with <code>XXX</code>, <code>99999</code>, or NULL placeholders.</div>
+            </div>
+            <div class="anom">
+              <span class="anom-b bad">Deletion</span>
+              <div class="anom-text"><strong>Deleting one thing accidentally destroys unrelated information.</strong> Customer Lee Sproull only appears on Order #2. Delete that order → their name, ID, and address are permanently gone from the entire system.</div>
+            </div>
+            <div class="anom">
+              <span class="anom-b bad">Update</span>
+              <div class="anom-text"><strong>The same fact lives in multiple rows — update some, miss others → contradictions.</strong> Jeff Bezos's address appears on Orders #1, #6, and #8. Update one → three different addresses for the same person. Classic customer service nightmare: "We have your old address in billing, a different one in our main system."</div>
+            </div>
+          </div>
+        </div></div>
       </div>
-    </div>
 
-    <div class="assignment-card">
-      <div class="ac-badge">📋</div>
-      <div class="ac-body">
-        <div class="ac-label">Post-module Assignment 1 · 10%</div>
-        <div class="ac-title">ERD + Relational Schema Exercise</div>
-        <div class="ac-desc">Details given in class. Apply the ERD → relational schema translation algorithm in ERDPlus.</div>
-        <div class="ac-due">Due: <span>Post-module</span> · No late submissions</div>
+      <!-- NORMALIZATION -->
+      <div class="sc bl-accent open" id="normalization">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico">🔧</div>
+            <div>
+              <div class="sc-tag">A1 · Solution</div>
+              <div class="sc-name">Database Normalization</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <p><strong>Goal: one single authoritative source of truth for every piece of data.</strong> Instead of one giant flat table, split into distinct logical entities — Customers, Books, Orders — and link them together with keys. Each fact lives in exactly one place.</p>
+          <div class="anom-list">
+            <div class="anom">
+              <span class="anom-b ok">Insertion ✓</span>
+              <div class="anom-text">Add a new book to the <em>Book</em> table anytime — no fake order required. Books exist independently of orders.</div>
+            </div>
+            <div class="anom">
+              <span class="anom-b ok">Deletion ✓</span>
+              <div class="anom-text">Delete an order → customer record survives untouched in the <em>Customer</em> table.</div>
+            </div>
+            <div class="anom">
+              <span class="anom-b ok">Update ✓</span>
+              <div class="anom-text">Change Bezos's address in <strong>one place</strong>. Every order automatically reflects the new address — they all just point to the same Customer ID.</div>
+            </div>
+          </div>
+          <div class="callout">
+            <span class="c-label">Startup Pattern</span>
+            <p>Many startups begin with MongoDB or a flat schema — fast, flexible, no upfront design. After 2–3 years of growth, they need analytics. They open the database and discover an unorganized mess. What follows is a year-long data cleanup migration. Design for normalization early, or pay for it later.</p>
+          </div>
+        </div></div>
       </div>
-    </div>
 
-    <div class="assignment-card">
-      <div class="ac-badge">✅</div>
-      <div class="ac-body">
-        <div class="ac-label">Post-module Quizzes · 40%</div>
-        <div class="ac-title">4× Post-Module Quizzes</div>
-        <div class="ac-desc">Four quizzes covering SQL, ER modeling, BigQuery, and database design. Grading: 65% assignments · 30% final exam · 5% participation.</div>
-        <div class="ac-due">Due: <span>Post-module</span> · No late submissions</div>
+      <!-- ERD BASICS -->
+      <div class="sc bl-accent open" id="erd-basics">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico">📐</div>
+            <div>
+              <div class="sc-tag">A2 · ERD Fundamentals</div>
+              <div class="sc-name">Entities, Attributes &amp; Primary Keys</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <h4>Core Vocabulary</h4>
+          <ul>
+            <li><strong>Entity</strong> — a thing we want to store information about (rectangle in ERD). Becomes a table in the final database. Examples: Students, Courses, Products.</li>
+            <li><strong>Instance</strong> — one specific row. e.g. <code>("Daivik", "Suresh", 2001, "M")</code></li>
+            <li><strong>Attribute</strong> — a property of an entity (oval in ERD). Each has a <strong>domain</strong> — the set of valid values.</li>
+            <li><strong>Relationship</strong> — an association between entities, named with a verb (Student <em>enrolls in</em> Course).</li>
+          </ul>
+          <h4>Domain Restrictions — First Defense Against Bad Data</h4>
+          <p>Domain constraints catch bad values at entry time, before they corrupt the database:</p>
+          <ul>
+            <li>Year of birth: <code>INTEGER BETWEEN 1940 AND 2010</code> — not <code>99</code>, not <code>0.5</code></li>
+            <li>Gender: <code>ENUM('M','F')</code> — not free text like "male" / "men"</li>
+          </ul>
+          <p>The Greece disaster could have been partially prevented with a domain constraint rejecting <code>999999999</code>.</p>
+          <h4>Primary Keys</h4>
+          <p>The attribute(s) that <strong>uniquely identify each instance</strong>. Two hard rules:</p>
+          <ol>
+            <li>No two instances share the same PK value (uniqueness)</li>
+            <li>Each instance has exactly one non-null PK value</li>
+          </ol>
+          <p style="margin-top:10px"><strong>Composite PK</strong> — uniqueness only holds when combining two attributes. Examples: (CourseID + SectionNumber), (BuildingAddress + ApartmentNumber), (AlbumID + TrackNumber).</p>
+        </div></div>
       </div>
-    </div>
 
-  </div>
+      <!-- PK DESIGN -->
+      <div class="sc bl-amber" id="pk-design">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico amber">🔑</div>
+            <div>
+              <div class="sc-tag amber">A3 · Primary Key Design</div>
+              <div class="sc-name">Why Most Natural Keys Fail</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <div class="callout amber">
+            <span class="c-label">Golden Rule</span>
+            <p><strong>Generate your own unique identifiers. Never use someone else's primary key.</strong> A key you didn't create can change, expire, get reassigned, or become non-unique in ways completely outside your control.</p>
+          </div>
+          <table class="dt">
+            <thead><tr><th>Candidate</th><th>Why it fails</th></tr></thead>
+            <tbody>
+              <tr><td>SSN</td><td><strong>Universities used SSN as student ID.</strong> International students got assigned fake SSNs. Later when they got real ones, the system had two records — course history split between them. Also: not everyone has an SSN.</td></tr>
+              <tr><td>Credit card</td><td>Identifies an <em>account</em>, not a person. One person has multiple cards. Cards expire and get replaced with new numbers.</td></tr>
+              <tr><td>Passport number</td><td>Expires. People renew passports → same person, new key every 10 years.</td></tr>
+              <tr><td>Email</td><td>People change providers, forget old accounts → same person, multiple conflicting records.</td></tr>
+            </tbody>
+          </table>
+          <div class="callout green">
+            <span class="c-label">Best Practice</span>
+            <p>Use an <strong>auto-generated surrogate key</strong> (StudentID, CustomerID, OrderID). Assign it once at record creation. Never expose it externally, never change it. This is what every major production system does.</p>
+          </div>
+        </div></div>
+      </div>
 
-</div>
-</div>
+      <!-- CARDINALITY -->
+      <div class="sc bl-accent" id="cardinality">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico">🔗</div>
+            <div>
+              <div class="sc-tag">A2 · Relationships</div>
+              <div class="sc-name">Relationships, Cardinality &amp; Crow's Foot Notation</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <h4>Relationship Attributes</h4>
+          <p>Some attributes belong to the <em>connection itself</em>, not to either entity alone. In a Student <em>enrolls in</em> Course relationship, <strong>Semester</strong> and <strong>Grade</strong> are relationship attributes — a grade isn't a property of the student (they have many grades from many courses) or the course (it has many students with different grades). It belongs to the specific enrollment event.</p>
+          <h4>Three Relationship Types</h4>
+          <ul>
+            <li><strong>One-to-one (1:1)</strong> — each office has at most one faculty advisor, each advisor has at most one office</li>
+            <li><strong>One-to-many (1:N)</strong> — one advisor has many students, each student has exactly one advisor</li>
+            <li><strong>Many-to-many (M:N)</strong> — students take many courses, each course has many students</li>
+          </ul>
+          <h4>Crow's Foot Notation (ERDPlus)</h4>
+          <p>Each end of a relationship line carries <strong>two symbols</strong>:</p>
+          <ul>
+            <li><strong>Inner symbol = minimum</strong> (participation): pipe <code>|</code> = mandatory (min 1) · circle <code>○</code> = optional (min 0)</li>
+            <li><strong>Outer symbol = maximum</strong>: pipe <code>|</code> = one · crow's foot <code>⟨</code> = many</li>
+          </ul>
+          <table class="dt" style="margin-top:12px">
+            <thead><tr><th>Symbols</th><th>Reading</th><th>Example</th></tr></thead>
+            <tbody>
+              <tr><td><code>| |</code></td><td>Exactly one, mandatory</td><td>A dept must have exactly one building address</td></tr>
+              <tr><td><code>| ⟨</code></td><td>One or more, mandatory</td><td>A department must have ≥1 employee</td></tr>
+              <tr><td><code>○ ⟨</code></td><td>Zero or more, optional</td><td>A course may have 0 to many enrolled students</td></tr>
+              <tr><td><code>○ |</code></td><td>Zero or one, optional</td><td>A student may or may not have an advisor on record</td></tr>
+            </tbody>
+          </table>
+          <div class="callout amber">
+            <span class="c-label">Design Balance</span>
+            <p>Too rigid = blocks legitimate edge cases, forces workarounds. Too flexible = "anything goes" → data chaos and eventual Greece-style disasters. Find the constraints that reflect real business rules, then enforce them at the DB level — not in application code.</p>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- SCHEMA ALGORITHM -->
+      <div class="sc bl-green" id="schema-algo">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico green">⚙️</div>
+            <div>
+              <div class="sc-tag green">A3 · Core Algorithm ★ Exam</div>
+              <div class="sc-name">ERD → Relational Schema Translation</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <p>This is a <strong>mechanical, step-by-step algorithm</strong>. ERDPlus can auto-generate it from a completed ERD. Know every step cold for the exam.</p>
+          <ol>
+            <li><strong>Check completeness</strong> — every entity has attributes + a PK; every relationship has cardinalities on both ends. Do this before proceeding.</li>
+            <li><strong>Entities → tables</strong> — one table per entity. Attributes become columns. PK stays PK.</li>
+            <li><strong>1:N → FK on the "many" side</strong> — add a foreign key column to the "many" table pointing to the PK of the "one" table. If participation is mandatory (inner symbol = pipe, min = 1), set <code>NOT NULL</code>.</li>
+            <li><strong>1:1 → FK on either side</strong> — add FK to one table + <code>UNIQUE</code> constraint to enforce max cardinality of 1.</li>
+            <li><strong>M:N → bridge table</strong> — create a new junction table. Its PK is the composite of both entities' PKs. Relationship attributes live here.</li>
+          </ol>
+          <div class="callout green">
+            <span class="c-label">Constraint Mnemonic</span>
+            <p><code>NOT NULL</code> = mandatory participation (min = 1, inner pipe symbol).<br><code>UNIQUE</code> = max cardinality = 1 (enforces the "one" side of a 1:1 relationship).</p>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- BRIDGE TABLES -->
+      <div class="sc bl-accent" id="bridge-tables">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico">🌉</div>
+            <div>
+              <div class="sc-tag">A3–A4 · M:N Relationships</div>
+              <div class="sc-name">Bridge Tables — "Bread and Butter of Most Systems"</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <p>Every M:N relationship requires a <strong>bridge table</strong> (junction / associative table). You can't add a FK to either entity's table — that would require storing a list of values in one cell, which violates first normal form entirely.</p>
+          <h4>Painter / Owner Example</h4>
+          <table class="dt">
+            <thead><tr><th>Table</th><th>Columns</th><th>Note</th></tr></thead>
+            <tbody>
+              <tr><td>Painter</td><td>PainterID, Name, DOB</td><td>Standard entity</td></tr>
+              <tr><td>Painting</td><td>PaintingID, Name, <em>PainterID FK</em>, <em>GalleryID FK</em></td><td>1:N from Painter</td></tr>
+              <tr><td>Owner</td><td>PersonID, Name, Address</td><td>Standard entity</td></tr>
+              <tr><td>Buys <em>(bridge)</em></td><td>TransactionID, PurchaseDate, Amount, <em>OwnerID FK</em>, <em>PaintingID FK</em></td><td>M:N bridge</td></tr>
+            </tbody>
+          </table>
+          <h4>Employee / Department / Job (from class)</h4>
+          <table class="dt">
+            <thead><tr><th>Table</th><th>Columns</th><th>Why</th></tr></thead>
+            <tbody>
+              <tr><td>Department</td><td>DeptNum, DeptName</td><td>Standard entity</td></tr>
+              <tr><td>Employee</td><td>ID, Name, <em>DeptNum FK</em></td><td>1:N → FK on many side</td></tr>
+              <tr><td>Job</td><td>JobNum, JobName</td><td>Standard entity</td></tr>
+              <tr><td>JobAssignment <em>(bridge)</em></td><td><strong>EmpID FK + JobNum FK</strong> (composite PK), <strong>Hours</strong></td><td>M:N bridge; Hours is a relationship attr</td></tr>
+            </tbody>
+          </table>
+          <div class="callout amber">
+            <span class="c-label">Key Insight — Derived vs. Stored Attributes</span>
+            <p><strong>Never store "Number of Employees" per department.</strong> Compute it with <code>COUNT(*)</code>. Storing it reintroduces update anomalies — you'd have to update it every hire and departure.<br><br><strong>Hours Worked</strong> on a job = a relationship attribute. It belongs in the bridge table (JobAssignment), not in Employee or Job — because it's a property of that specific assignment pairing, not of either entity alone.</p>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- SQL DDL -->
+      <div class="sc bl-accent" id="ddl">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico">💾</div>
+            <div>
+              <div class="sc-tag">A5 · SQL DDL</div>
+              <div class="sc-name">Creating Tables — Key DDL Constraints</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <p>ERDPlus generates <code>CREATE TABLE</code> SQL from the relational schema. Know what each constraint does:</p>
+          <table class="dt">
+            <thead><tr><th>Constraint</th><th>What it enforces</th></tr></thead>
+            <tbody>
+              <tr><td><code>PRIMARY KEY(col)</code></td><td>Unique identifier — no duplicate values, no nulls</td></tr>
+              <tr><td><code>NOT NULL</code></td><td>Mandatory participation — inner symbol = pipe (min = 1)</td></tr>
+              <tr><td><code>UNIQUE</code></td><td>Max cardinality = 1 — enforces the "exactly one" side of a 1:1</td></tr>
+              <tr><td><code>FOREIGN KEY(col) REFERENCES T(pk)</code></td><td>DB rejects rows pointing to non-existent PKs — second defense after domain constraints</td></tr>
+            </tbody>
+          </table>
+          <div class="callout">
+            <span class="c-label">ERDPlus Workflow</span>
+            <p>Add entities + attributes + PKs → add relationships + cardinalities on both ends → Main Menu → <strong>Convert to Relational Schema</strong> → verify → <strong>Convert to SQL</strong> → fine-tune data types. Use <strong>erdplus-old.com</strong> (the old version used in class).</p>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- EXAM HOOKS -->
+      <div class="divider" id="exam-hooks" style="margin-top:40px">Exam Hooks — Module 1</div>
+
+      <div class="sc bl-amber">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico amber">⭐</div>
+            <div>
+              <div class="sc-tag amber">Quick Reference</div>
+              <div class="sc-name">Things to Know Cold</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <ul>
+            <li>Name and define the <strong>3 anomalies</strong> with an example each: insertion → fake data required · deletion → destroys unrelated info · update → same fact in multiple rows → contradictions.</li>
+            <li>Read a <strong>Crow's Foot diagram</strong> and state min/max on both sides in plain English. Inner symbol = min, outer = max.</li>
+            <li><strong>ERD → relational schema rules</strong>: 1:N → FK on the "many" side; M:N → bridge table with composite key; 1:1 → FK on either side + UNIQUE.</li>
+            <li><strong>Derived vs. stored attributes</strong>: never store what you can compute (NumEmployees). Relationship attributes (Hours, Grade, Semester) live in the bridge/join table.</li>
+            <li><strong>PK candidates to reject</strong>: SSN, phone, email, passport — know the specific reason each fails.</li>
+            <li><strong>NOT NULL = mandatory participation</strong> (min = 1). <strong>UNIQUE = max cardinality = 1</strong>. Know both.</li>
+            <li>The <strong>Greece story</strong> = the motivating example for all of normalization. Know the arc: placeholder data → currency conversion → fake receivables → political fallout.</li>
+          </ul>
+        </div></div>
+      </div>
+
+    </div><!-- /day1 -->
+
+    <!-- ASSIGNMENTS -->
+    <div id="panel-assignments" class="day-panel">
+      <div class="divider" id="assignments">Assignments &amp; Deadlines</div>
+
+      <div class="assign-card">
+        <div class="ac-ico">☁️</div>
+        <div class="ac-b">
+          <div class="ac-label">Pre-module · 5%</div>
+          <div class="ac-title">GCP + BigQuery Setup</div>
+          <div class="ac-desc">Create GCP project (org = nyu.edu), enable $300 billing trial, star <code>nyu-datasets</code>, run <code>SELECT * FROM `nyu-datasets.citibike.m_dataset` LIMIT 1000</code>. Submit a screenshot of query results + starred dataset in Explorer.</div>
+          <div class="ac-due">Due: <span>Before in-person week</span></div>
+        </div>
+      </div>
+
+      <div class="assign-card">
+        <div class="ac-ico">📋</div>
+        <div class="ac-b">
+          <div class="ac-label">Post-module Assignment 1 · 10%</div>
+          <div class="ac-title">ERD + Relational Schema Exercise</div>
+          <div class="ac-desc">Apply the full ERD → relational schema translation algorithm in ERDPlus. Details given in class. No late submissions.</div>
+          <div class="ac-due">Due: <span>Post-module</span></div>
+        </div>
+      </div>
+
+      <div class="assign-card">
+        <div class="ac-ico">📝</div>
+        <div class="ac-b">
+          <div class="ac-label">Post-module Quizzes · 40%</div>
+          <div class="ac-title">4× Post-Module Quizzes</div>
+          <div class="ac-desc">Four quizzes covering SQL, ER modeling, BigQuery, and database design. Grade breakdown: 65% assignments · 30% final exam · 5% participation.</div>
+          <div class="ac-due">Due: <span>Post-module</span> · No late submissions</div>
+        </div>
+      </div>
+    </div><!-- /assignments -->
+
+  </div><!-- /content -->
+</div><!-- /main -->
 
 <script>
-const KEY = 'notes-unlocked';
-const PWD = 'huncho';
-if (sessionStorage.getItem(KEY) === 'true') {
-  document.getElementById('gate').style.display = 'none';
-  document.getElementById('main').style.display = 'block';
-}
+const KEY = 'notes-unlocked', PWD = 'huncho';
+if (sessionStorage.getItem(KEY) === 'true') unlock();
 document.getElementById('gate-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
 function tryUnlock() {
-  const val = document.getElementById('gate-input').value.trim().toLowerCase();
-  if (val === PWD) {
-    sessionStorage.setItem(KEY, 'true');
-    document.getElementById('gate').style.display = 'none';
-    document.getElementById('main').style.display = 'block';
+  if (document.getElementById('gate-input').value.trim().toLowerCase() === PWD) {
+    sessionStorage.setItem(KEY, 'true'); unlock();
   } else {
     document.getElementById('gate-err').textContent = 'wrong password';
     document.getElementById('gate-input').value = '';
   }
 }
+function unlock() {
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('sidebar').style.display = 'block';
+  document.getElementById('main').style.display = 'block';
+}
+
+function toggle(hdr) { hdr.closest('.sc').classList.toggle('open'); }
+
+document.querySelectorAll('.day-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.day-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+  });
+});
+
+const navLinks = document.querySelectorAll('.sb-nav a[href^="#"]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+    }
+  });
+}, { rootMargin: '-25% 0px -65% 0px' });
+document.querySelectorAll('[id]').forEach(s => observer.observe(s));
 </script>
 </body>
 </html>
