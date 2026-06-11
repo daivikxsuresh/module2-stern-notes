@@ -7,28 +7,33 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-
 :root {
   --bg:      #0c0a14;
   --surface: #120f1c;
   --card:    #171424;
-  --border-soft: rgba(255,255,255,.06);
+  --border:  #2a2440;
+  --accent:  #a78bfa;
+  --accent-soft: rgba(167,139,250,.08);
+  --amber:   #fbbf24;
+  --green:   #34d399;
+  --red:     #f87171;
   --text:    #ebe8f5;
   --muted:   #7b6fa8;
   --faint:   #312b4a;
-  --accent:  #a78bfa;
-  --accent-dim: #7c3aed;
-  --accent-glow: rgba(167,139,250,.18);
-  --accent-soft: rgba(167,139,250,.08);
+  --sidebar-w: 256px;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 
 body {
   background: var(--bg); color: var(--text);
   font-family: 'Lora', Georgia, serif;
-  min-height: 100vh; display: flex; flex-direction: column;
-  align-items: center; overflow-x: hidden; position: relative;
+  font-size: 16px; line-height: 1.75;
+  display: flex; min-height: 100vh; overflow-x: hidden;
 }
 body::before {
   content: ''; position: fixed; inset: 0;
@@ -36,50 +41,153 @@ body::before {
   background-size: 28px 28px; pointer-events: none; z-index: 0;
 }
 body::after {
-  content: ''; position: fixed; top: -180px; left: 50%; transform: translateX(-50%);
-  width: 900px; height: 350px;
-  background: radial-gradient(ellipse at 50% 50%, rgba(167,139,250,.1) 0%, transparent 60%);
+  content: ''; position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 400px;
+  background: radial-gradient(ellipse, rgba(167,139,250,.07) 0%, transparent 70%);
   pointer-events: none; z-index: 0;
 }
 
+/* ── GATE ── */
 #gate { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-.gate-box { background: var(--surface); border: 1px solid var(--border-soft); border-radius: 16px; padding: 40px 44px; max-width: 360px; width: 90%; text-align: center; }
+.gate-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px 44px; max-width: 360px; width: 90%; text-align: center; }
 .gate-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
-.gate-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); margin-bottom: 24px; line-height: 1.3; }
-.gate-input { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-soft); background: var(--card); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: .08em; outline: none; text-align: center; transition: border-color .2s; }
+.gate-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); margin-bottom: 24px; }
+.gate-input { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: .08em; outline: none; text-align: center; transition: border-color .2s; }
 .gate-input:focus { border-color: var(--accent); }
 .gate-btn { margin-top: 12px; width: 100%; padding: 10px; border-radius: 8px; border: none; cursor: pointer; background: var(--accent); color: #0c0a14; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; transition: opacity .2s; }
 .gate-btn:hover { opacity: .85; }
-.gate-err { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #f87171; margin-top: 10px; min-height: 16px; }
+.gate-err { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--red); margin-top: 10px; min-height: 16px; }
 
-.wrapper { width: 100%; max-width: 860px; padding: 64px 28px 96px; position: relative; z-index: 1; }
-.back-nav { display: inline-flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); text-decoration: none; letter-spacing: .06em; margin-bottom: 36px; opacity: .75; transition: opacity .2s, color .2s; }
-.back-nav:hover { opacity: 1; color: var(--accent); }
+/* ── SIDEBAR ── */
+#sidebar {
+  position: fixed; top: 0; left: 0;
+  width: var(--sidebar-w); height: 100vh;
+  background: rgba(12,10,20,.97); border-right: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  overflow-y: auto; overflow-x: hidden;
+  z-index: 100; padding: 24px 0 40px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.sb-brand { padding: 0 18px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.sb-badge { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); border: 1px solid rgba(167,139,250,.25); border-radius: 4px; padding: 3px 8px; margin-bottom: 8px; }
+.sb-title { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--text); line-height: 1.3; }
+.sb-sub { font-size: 12px; color: var(--muted); margin-top: 3px; font-style: italic; }
+.sb-group { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); padding: 14px 18px 5px; }
+.sb-nav a { display: flex; align-items: center; gap: 9px; padding: 7px 18px; text-decoration: none; font-size: 13px; color: var(--muted); transition: color .15s, background .15s; border-left: 2px solid transparent; }
+.sb-nav a:hover { color: var(--text); background: rgba(255,255,255,.03); }
+.sb-nav a.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-soft); }
+.sb-nav .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--faint); flex-shrink: 0; transition: background .15s; }
+.sb-nav a.active .dot { background: var(--accent); }
+.sb-back-row { border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.sb-back-row a { display: flex; align-items: center; gap: 8px; padding: 12px 18px; text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: .05em; color: var(--muted); transition: color .15s, background .15s; }
+.sb-back-row a:hover { color: var(--text); background: rgba(255,255,255,.03); }
 
-.course-pill { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); border: 1px solid rgba(167,139,250,.2); border-radius: 20px; padding: 4px 14px; display: inline-block; margin-bottom: 20px; }
-.page-title { font-family: 'DM Serif Display', serif; font-size: clamp(32px,5vw,48px); line-height: 1.15; color: var(--text); margin-bottom: 8px; }
-.page-title em { font-style: italic; color: var(--accent); }
-.page-sub { font-size: 15px; color: var(--muted); font-style: italic; margin-bottom: 24px; }
-.meta-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 52px; }
-.meta-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); background: var(--surface); border: 1px solid var(--border-soft); border-radius: 6px; padding: 5px 12px; }
-.meta-chip.hi { color: var(--accent); background: var(--accent-soft); border-color: rgba(167,139,250,.2); }
+/* ── MAIN ── */
+#main { margin-left: var(--sidebar-w); flex: 1; position: relative; z-index: 1; }
 
-.section { margin-bottom: 52px; }
-.section-label { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin-bottom: 16px; padding-left: 2px; }
+/* ── HEADER ── */
+#hdr { padding: 48px 56px 32px; border-bottom: 1px solid var(--border); }
+.hdr-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.hdr-title { font-family: 'DM Serif Display', serif; font-size: 42px; color: var(--text); line-height: 1.15; margin-bottom: 6px; }
+.hdr-title span { color: var(--accent); }
+.hdr-sub { color: var(--muted); font-size: 15px; margin-bottom: 28px; font-style: italic; }
+.day-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.day-tab { padding: 8px 20px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .07em; cursor: pointer; border: 1px solid var(--border); color: var(--muted); background: transparent; transition: all .2s; }
+.day-tab:hover { color: var(--text); border-color: var(--accent); }
+.day-tab.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 
-.empty-state { border: 1px dashed rgba(167,139,250,.2); border-radius: 12px; padding: 36px 28px; text-align: center; color: var(--muted); }
-.empty-icon { font-size: 28px; margin-bottom: 12px; }
-.empty-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); margin-bottom: 6px; }
-.empty-text { font-size: 14px; font-style: italic; }
+/* ── CONTENT ── */
+#content { padding: 36px 56px 80px; }
+.day-panel { display: none; }
+.day-panel.active { display: block; }
 
-.assignment-card { background: var(--surface); border: 1px solid var(--border-soft); border-radius: 12px; padding: 22px 24px; margin-bottom: 12px; display: flex; gap: 18px; align-items: flex-start; }
-.ac-badge { flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); border: 1px solid rgba(167,139,250,.2); display: flex; align-items: center; justify-content: center; font-size: 16px; }
-.ac-body { flex: 1; }
-.ac-label { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
-.ac-title { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--text); margin-bottom: 4px; }
-.ac-desc { font-size: 13px; color: var(--muted); line-height: 1.55; }
+/* ── SECTION CARD ── */
+.sc {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; margin-bottom: 16px; overflow: hidden;
+  transition: box-shadow .2s, transform .18s;
+  animation: fadeUp .45s cubic-bezier(.16,1,.3,1) both;
+}
+.sc:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,.35); }
+.sc.bl-accent { border-left: 3px solid var(--accent); }
+.sc.bl-amber  { border-left: 3px solid var(--amber); }
+.sc.bl-green  { border-left: 3px solid var(--green); }
+
+.sc-hdr { padding: 20px 24px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 16px; user-select: none; transition: background .15s; }
+.sc-hdr:hover { background: rgba(255,255,255,.02); }
+.sc-hdr-l { display: flex; align-items: center; gap: 14px; }
+.sc-ico { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; background: var(--accent-soft); border: 1px solid rgba(167,139,250,.2); }
+.sc-ico.amber { background: rgba(251,191,36,.1); border-color: rgba(251,191,36,.2); }
+.sc-ico.green { background: rgba(52,211,153,.1); border-color: rgba(52,211,153,.2); }
+.sc-tag { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); margin-bottom: 3px; }
+.sc-tag.amber { color: var(--amber); }
+.sc-tag.green { color: var(--green); }
+.sc-name { font-family: 'DM Serif Display', serif; font-size: 19px; color: var(--text); line-height: 1.25; }
+.chevron { color: var(--muted); transition: transform .25s; font-size: 14px; flex-shrink: 0; opacity: .7; }
+.sc.open .chevron { transform: rotate(180deg); }
+
+.sc-body { max-height: 0; overflow: hidden; transition: max-height .4s ease, opacity .3s ease; opacity: 0; }
+.sc.open .sc-body { max-height: 6000px; opacity: 1; }
+.sc-in { padding: 4px 28px 28px 80px; border-top: 1px solid var(--border); }
+
+/* ── PROSE ── */
+.sc-in p { margin-bottom: 14px; color: rgba(235,232,245,.88); }
+.sc-in p:last-child { margin-bottom: 0; }
+.sc-in strong, .sc-in b { color: var(--text); font-weight: 600; }
+.sc-in em { color: var(--accent); font-style: italic; }
+.sc-in ul { padding-left: 20px; margin-bottom: 14px; color: rgba(235,232,245,.85); }
+.sc-in li { margin-bottom: 7px; }
+.sc-in li::marker { color: var(--accent); }
+.sc-in ol { list-style: none; padding-left: 0; margin-bottom: 14px; counter-reset: step; }
+.sc-in ol li { counter-increment: step; display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; color: rgba(235,232,245,.85); }
+.sc-in ol li::before { content: counter(step); flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-soft); border: 1px solid rgba(167,139,250,.2); color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.sc-in h4 { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--text); margin: 22px 0 9px; padding-bottom: 5px; border-bottom: 1px solid var(--border); }
+
+/* ── CALLOUT ── */
+.callout { background: var(--accent-soft); border: 1px solid rgba(167,139,250,.2); border-radius: 9px; padding: 15px 18px; margin: 16px 0; }
+.callout.amber { background: rgba(251,191,36,.08); border-color: rgba(251,191,36,.22); }
+.callout.green { background: rgba(52,211,153,.07); border-color: rgba(52,211,153,.22); }
+.c-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 7px; }
+.callout.amber .c-label { color: var(--amber); }
+.callout.green .c-label { color: var(--green); }
+.callout p { color: rgba(235,232,245,.88); margin: 0; font-size: 14.5px; line-height: 1.65; }
+
+/* ── ANOMALY LIST (good/bad badges) ── */
+.anom-list { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+.anom { background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
+.anom-b { flex-shrink: 0; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; border-radius: 5px; padding: 3px 8px; margin-top: 2px; white-space: nowrap; }
+.anom-b.bad { color: var(--red); background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.2); }
+.anom-b.ok  { color: var(--green); background: rgba(52,211,153,.1); border: 1px solid rgba(52,211,153,.2); }
+.anom-text { font-size: 14.5px; color: rgba(235,232,245,.82); line-height: 1.65; }
+.anom-text strong { color: var(--text); }
+
+/* ── TABLE ── */
+.dt { width: 100%; border-collapse: collapse; font-size: 14px; margin: 14px 0; }
+.dt th { background: var(--accent-soft); color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+.dt td { padding: 10px 14px; border-bottom: 1px solid rgba(42,36,64,.7); color: rgba(235,232,245,.82); vertical-align: top; line-height: 1.55; }
+.dt td:first-child { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: nowrap; }
+.dt td strong { color: var(--text); }
+.dt tr:last-child td { border-bottom: 0; }
+.dt tr:hover td { background: rgba(167,139,250,.03); }
+
+code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: rgba(167,139,250,.09); color: var(--accent); border-radius: 4px; padding: 1px 6px; }
+pre { background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 14px 16px; margin: 14px 0; overflow-x: auto; }
+pre code { background: none; padding: 0; color: rgba(235,232,245,.88); font-size: 12.5px; line-height: 1.6; display: block; }
+
+/* ── ASSIGNMENTS ── */
+.assign-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; margin-bottom: 12px; display: flex; gap: 18px; align-items: flex-start; }
+.ac-ico { flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); border: 1px solid rgba(167,139,250,.2); display: flex; align-items: center; justify-content: center; font-size: 17px; }
+.ac-b { flex: 1; }
+.ac-label { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
+.ac-title { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--text); margin-bottom: 4px; }
+.ac-desc { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
 .ac-due { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); margin-top: 8px; }
 .ac-due span { color: var(--accent); }
+.done-badge { display: inline-flex; align-items: center; gap: 4px; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; background: rgba(52,211,153,.1); color: #34d399; border: 1px solid rgba(52,211,153,.2); border-radius: 20px; padding: 2px 8px; margin-left: 8px; }
+
+.divider { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin: 32px 0 14px; padding-left: 2px; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
@@ -94,99 +202,538 @@ body::after {
   </div>
 </div>
 
-<div id="main" style="display:none; width:100%;">
-<div class="wrapper">
-
-  <a class="back-nav" href="../">← Module 2 hub</a>
-
-  <div class="course-pill">PY · Wed Jun 10</div>
-  <h1 class="page-title">Dealing with Data<br /><em>using Python</em></h1>
-  <p class="page-sub">Prof. Panos Ipeirotis · Pandas · APIs · Colab</p>
-
-  <div class="meta-row">
-    <span class="meta-chip hi">Wed Jun 10</span>
-    <span class="meta-chip">Google Colab</span>
-    <span class="meta-chip">Pandas</span>
-    <span class="meta-chip">Web APIs</span>
-    <span class="meta-chip">ChatGPT API</span>
-    <span class="meta-chip">MySQL Workbench</span>
+<nav id="sidebar" style="display:none">
+  <div class="sb-back-row">
+    <a href="../">← Module 2 hub</a>
+  </div>
+  <div class="sb-brand">
+    <div class="sb-badge">PY · Module 2</div>
+    <div class="sb-title">Dealing with Data using Python</div>
+    <div class="sb-sub">Prof. Panos Ipeirotis</div>
   </div>
 
-  <div class="section">
-    <div class="section-label">Lecture Notes</div>
-    <div class="empty-state">
-      <div class="empty-icon">🐍</div>
-      <div class="empty-label">No notes yet</div>
-      <div class="empty-text">Notes will be added after the Jun 10 session.</div>
+  <div class="sb-group">Day 3 — Jun 10 · SQL Wrap-Up</div>
+  <div class="sb-nav">
+    <a href="#subqueries"><span class="dot"></span>Subqueries</a>
+    <a href="#where-vs-having"><span class="dot"></span>WHERE vs. HAVING</a>
+    <a href="#semi-anti-joins"><span class="dot"></span>Semi-Joins &amp; Anti-Joins</a>
+    <a href="#music-recs"><span class="dot"></span>Music Recommendations</a>
+    <a href="#books-politics"><span class="dot"></span>Books × Politics (Lift)</a>
+    <a href="#derived-ctes-views"><span class="dot"></span>Derived Tables, CTEs, Views</a>
+  </div>
+
+  <div class="sb-group">Day 3 — APIs &amp; Pipeline</div>
+  <div class="sb-nav">
+    <a href="#apis-json"><span class="dot"></span>APIs &amp; JSON</a>
+    <a href="#openai-api"><span class="dot"></span>OpenAI API</a>
+    <a href="#citibike"><span class="dot"></span>Citi Bike Pipeline</a>
+  </div>
+
+  <div class="sb-group">Reference</div>
+  <div class="sb-nav">
+    <a href="#exam-hooks"><span class="dot"></span>Exam Hooks</a>
+    <a href="#next-steps"><span class="dot"></span>Next Steps</a>
+    <a href="#assignments"><span class="dot"></span>Assignments</a>
+  </div>
+</nav>
+
+<div id="main" style="display:none">
+
+  <div id="hdr">
+    <div class="hdr-eyebrow">NYU Stern · MSBAi · Module 2 · Dealing with Data</div>
+    <h1 class="hdr-title">Dealing with Data <span>using Python</span></h1>
+    <p class="hdr-sub">Prof. Panos Ipeirotis · SQL Subqueries · Web APIs · OpenAI API · Citi Bike Pipeline · Streamlit</p>
+    <div class="day-tabs">
+      <button class="day-tab active" data-panel="day3">Day 3 — Wed Jun 10</button>
+      <button class="day-tab" data-panel="assignments">Assignments</button>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-label">Key Concepts</div>
-    <div class="empty-state">
-      <div class="empty-icon">💡</div>
-      <div class="empty-label">Coming soon</div>
-      <div class="empty-text">Pandas DataFrames, REST APIs, JSON parsing, API authentication, ChatGPT API automation, BigQuery from Python.</div>
-    </div>
-  </div>
+  <div id="content">
 
-  <div class="section">
-    <div class="section-label">Assignments</div>
+    <!-- DAY 3 -->
+    <div id="panel-day3" class="day-panel active">
 
-    <div class="assignment-card">
-      <div class="ac-badge">📓</div>
-      <div class="ac-body">
-        <div class="ac-label">Pre-module</div>
-        <div class="ac-title">Introduction to Python Notebooks</div>
-        <div class="ac-desc">Work through github.com/ipeirotis/introduction-to-python notebooks. Set up Google Colab + MySQL Workbench before in-person day.</div>
-        <div class="ac-due">Complete: <span>before Jun 10</span></div>
+      <div class="divider">Morning — SQL Wrap-Up: Subqueries &amp; Segmentation</div>
+
+      <!-- SUBQUERIES -->
+      <div class="sc bl-accent open" id="subqueries">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico">🪆</div>
+            <div>
+              <div class="sc-tag">01 · Core Concept</div>
+              <div class="sc-name">Subqueries — Queries Inside Queries</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <div class="callout">
+            <span class="c-label">Core Idea</span>
+            <p>Take raw data, create a <strong>higher-level intermediate form</strong>, then query that intermediate result. Subqueries avoid hardcoded values, making the logic <strong>reusable and portable</strong>.</p>
+          </div>
+          <h4>Canonical Example — Cities Above the National Average</h4>
+          <p>Dataset: NYU <code>zero_transactions</code> table — columns <code>id, state, city, address, market_price</code>; 10 cities including NYC, Chicago, San Francisco, Santa Clara.</p>
+          <ol>
+            <li><strong>National average:</strong> <code>SELECT AVG(market_price) FROM zero_transactions</code></li>
+            <li><strong>City-level averages:</strong> <code>SELECT city, AVG(market_price) FROM zero_transactions GROUP BY city</code></li>
+            <li><strong>Filter</strong> to cities above the national average using <code>HAVING</code></li>
+            <li><strong>Replace the hardcoded value</strong> with the subquery in parentheses</li>
+          </ol>
+          <pre><code>SELECT city, AVG(market_price)
+FROM zero_transactions
+GROUP BY city
+HAVING AVG(market_price) > (SELECT AVG(market_price) FROM zero_transactions)</code></pre>
+          <p>Result: San Francisco, Santa Clara, and one other city.</p>
+        </div></div>
       </div>
-    </div>
 
-    <div class="assignment-card">
-      <div class="ac-badge">🗄️</div>
-      <div class="ac-body">
-        <div class="ac-label">Post-module Exercise 1</div>
-        <div class="ac-title">BigQuery Database Interaction</div>
-        <div class="ac-desc">Query the nyu-datasets BigQuery dataset using Python (google-cloud-bigquery library in Colab). TBD in class.</div>
-        <div class="ac-due">Due: <span>post-module</span> · No late submissions</div>
+      <!-- WHERE VS HAVING -->
+      <div class="sc bl-green open" id="where-vs-having">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico green">⚖️</div>
+            <div>
+              <div class="sc-tag green">02 · Key Distinction ★</div>
+              <div class="sc-name">WHERE vs. HAVING</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <table class="dt">
+            <thead><tr><th></th><th>WHERE</th><th>HAVING</th></tr></thead>
+            <tbody>
+              <tr><td>When it filters</td><td><strong>Before</strong> aggregation — individual rows</td><td><strong>After</strong> aggregation — on the aggregate result</td></tr>
+              <tr><td>Use case</td><td>Only include transactions above a price before grouping</td><td>Only return cities where the computed average exceeds a threshold</td></tr>
+              <tr><td>Aggregates</td><td><strong>Cannot</strong> filter on an aggregate value</td><td>Built for it</td></tr>
+            </tbody>
+          </table>
+          <div class="callout amber">
+            <span class="c-label">Alias Gotcha</span>
+            <p>Aliases in <code>HAVING</code> may work in some SQL engines but it's <strong>not guaranteed</strong> — safer to repeat the full expression (e.g. <code>HAVING AVG(market_price) > ...</code>).</p>
+          </div>
+          <h4>Variables as a Readability Alternative</h4>
+          <pre><code>SET national_avg_price = (SELECT AVG(market_price) FROM zero_transactions);
+-- then:
+HAVING AVG(market_price) > national_avg_price</code></pre>
+          <p>Identical semantics, significantly more readable. Preferred during development before packaging into a CTE.</p>
+        </div></div>
       </div>
-    </div>
 
-    <div class="assignment-card">
-      <div class="ac-badge">🤖</div>
-      <div class="ac-body">
-        <div class="ac-label">Post-module Exercise 2</div>
-        <div class="ac-title">Web APIs + ChatGPT API Automation</div>
-        <div class="ac-desc">Combine a public Web API with ChatGPT API calls to automate a data task. Details TBD in class.</div>
-        <div class="ac-due">Due: <span>post-module</span> · No late submissions</div>
+      <!-- SEMI / ANTI JOINS -->
+      <div class="sc bl-accent open" id="semi-anti-joins">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico">🔀</div>
+            <div>
+              <div class="sc-tag">03 · Patterns</div>
+              <div class="sc-name">Semi-Joins &amp; Anti-Joins</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <h4>Semi-Join — Filter With Another Table, Return Columns From One</h4>
+          <p>Example: get all drama or comedy movies. Join genre table → movies table, then <code>SELECT DISTINCT</code> on movies only to kill duplicates from the one-to-many join. Cleaner alternative when you don't need any columns from the second table — the subquery acts purely as a filter:</p>
+          <pre><code>SELECT * FROM movies
+WHERE movie_id IN (SELECT movie_id FROM movie_genre
+                   WHERE genre IN ('drama','comedy'))</code></pre>
+          <h4>Anti-Join — Rows That Do NOT Appear in Another Table</h4>
+          <p>Example: all movies <em>not</em> tagged as adult:</p>
+          <pre><code>SELECT * FROM movies
+WHERE movie_id NOT IN (SELECT movie_id FROM movie_genre
+                       WHERE genre = 'adult')</code></pre>
+          <ul>
+            <li>Correctly handles multi-genre movies: a film tagged adult + drama is <strong>excluded entirely</strong></li>
+            <li>Writing this as a regular join + filter is complex and error-prone; the subquery form is much simpler</li>
+          </ul>
+          <div class="callout amber">
+            <span class="c-label">Null Caveat</span>
+            <p>If a movie has <strong>no genre entry at all</strong>, it won't appear in the genre table and therefore won't be blocked by the anti-join — it slips through.</p>
+          </div>
+        </div></div>
       </div>
-    </div>
 
-  </div>
+      <!-- MUSIC RECS -->
+      <div class="sc bl-accent" id="music-recs">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico">🎵</div>
+            <div>
+              <div class="sc-tag">04 · Applied</div>
+              <div class="sc-name">Music Recommendation via Segmentation</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <p>Semi-join logic applied to build a basic recommendation system: <strong>find the favorite music of people who like a specific artist</strong> (e.g., Coldplay). Tables: <code>profiles</code> (profile_id) and <code>favorite_music</code> (profile_id, music, likes).</p>
+          <ol>
+            <li><strong>Base query:</strong> <code>GROUP BY music</code>, count likes across the full population → overall popularity</li>
+            <li><strong>Segment:</strong> add <code>WHERE profile_id IN (SELECT profile_id FROM favorite_music WHERE music = 'Coldplay')</code> — limits the population to Coldplay fans before computing popularity</li>
+            <li><strong>Re-segment instantly</strong> by swapping 'Coldplay' for 'Mozart' or any other artist</li>
+          </ol>
+          <p>Results: Coldplay fans also like Radiohead, Modest Mouse, Bag Raiders, etc.</p>
+          <div class="callout">
+            <span class="c-label">Limitation → Improvement</span>
+            <p>Raw popularity counts are <strong>biased toward globally popular music</strong>. Improvement: control for overall popularity so only music that is <em>disproportionately</em> popular within the segment surfaces as a recommendation.</p>
+          </div>
+          <p>The same pattern applies to any segment: gender, relationship status, age group, political views.</p>
+        </div></div>
+      </div>
 
-</div>
-</div>
+      <!-- BOOKS X POLITICS -->
+      <div class="sc bl-accent" id="books-politics">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico">📚</div>
+            <div>
+              <div class="sc-tag">05 · Applied</div>
+              <div class="sc-name">Book Preferences by Political Affiliation — Lift</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <p>Dataset: <code>profiles</code> (profile_id, political_views) + <code>favorite_books</code> (profile_id, book_id). <strong>936 conservatives vs. 6,461 liberals</strong> — a significant imbalance that makes raw counts misleading.</p>
+          <ol>
+            <li>Most popular books among <strong>liberals</strong> (semi-join on <code>political_views = 'liberal'</code>)</li>
+            <li>Repeat for <strong>conservatives</strong></li>
+            <li><strong>Normalize by group size</strong> to get percentages: <code>liberal_pct = COUNT(profile_id) / 6461</code>, <code>conservative_pct = COUNT(profile_id) / 936</code></li>
+            <li><strong>Join</strong> the two result tables on book to compare side by side</li>
+            <li>Compute <strong>lift</strong>: liberal lift = liberal_pct / conservative_pct (and vice versa). Lift &gt; 1 = the book over-indexes for that group.</li>
+          </ol>
+          <table class="dt">
+            <thead><tr><th>Book</th><th>Skew</th></tr></thead>
+            <tbody>
+              <tr><td>Kite Runner</td><td>~9× more likely for a <strong>liberal</strong> to like it</td></tr>
+              <tr><td>Bible · 1984 · Mere Christianity · Moneyball</td><td>Skew <strong>conservative</strong></td></tr>
+              <tr><td>Harry Potter</td><td>Liked by <strong>both</strong> groups at similar rates</td></tr>
+            </tbody>
+          </table>
+          <div class="callout green">
+            <span class="c-label">Key Insight</span>
+            <p>Even with 25,000 college students from ~20 years ago, the signal is real and interpretable. <strong>Scale to billions of users</strong> and you can infer political leanings, purchase intent, and voting likelihood from book or music preferences alone.</p>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- DERIVED TABLES / CTES / VIEWS -->
+      <div class="sc bl-accent" id="derived-ctes-views">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico">🏗️</div>
+            <div>
+              <div class="sc-tag">06 · Structuring Queries</div>
+              <div class="sc-name">Derived Tables, CTEs &amp; Materialized Views</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <h4>Derived Tables — Subquery in the FROM Clause</h4>
+          <p>Example: airport competition analysis using DOT flight data (25 years, all US airports):</p>
+          <ol>
+            <li><strong>Stage 1:</strong> GROUP BY origin airport → COUNT DISTINCT carriers and destinations</li>
+            <li><strong>Stage 2:</strong> query that result → GROUP BY carrier_count, COUNT airports — how many airports are served by exactly 1, 2, 3, 4+ carriers</li>
+          </ol>
+          <p>Stage 2 <strong>cannot run directly on the raw table</strong> — you need the intermediate aggregation first.</p>
+          <h4>Temp Tables During Development</h4>
+          <pre><code>CREATE TEMP TABLE airport_stats AS (stage 1 query);
+-- then run stage 2 as a separate query on airport_stats</code></pre>
+          <p>Best during development: you can <strong>inspect intermediate results at each step</strong>.</p>
+          <h4>Materialized Views — Pre-Compute &amp; Physically Store</h4>
+          <ul>
+            <li>Useful when the underlying table is large (e.g., <strong>300M rows</strong>) and the query is expensive to rerun</li>
+            <li><strong>Scheduled refresh:</strong> admin sets an interval (e.g., every 15 minutes)</li>
+            <li><strong>Incremental (delta) refresh:</strong> system detects source changes and updates only affected rows — BigQuery supports both, but incremental isn't supported for all query types</li>
+            <li>Trade-off: faster reads, but materialization must recompute whenever source data changes</li>
+            <li>Called <em>"live tables"</em> in some systems (e.g., Databricks)</li>
+          </ul>
+          <div class="callout green">
+            <span class="c-label">Recommended Workflow</span>
+            <p><strong>Temp tables</strong> while developing (inspect each step) → package into a <strong>CTE</strong> once logic is confirmed (clean single query) → promote to a <strong>view / materialized view</strong> if broadly useful across the org.</p>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="divider">Midday — APIs, JSON &amp; OpenAI</div>
+
+      <!-- APIS & JSON -->
+      <div class="sc bl-accent" id="apis-json">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico">🌐</div>
+            <div>
+              <div class="sc-tag">07 · Web APIs</div>
+              <div class="sc-name">APIs &amp; JSON with Python Requests</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <p>APIs return data in <strong>JSON</strong>: key-value pairs, nested dictionaries, and lists. The <code>requests</code> library handles the call and parsing: <code>requests.get(url, params=dict)</code> → <code>response.json()</code> gives you a Python dictionary.</p>
+          <table class="dt">
+            <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td>200</td><td>Success</td></tr>
+              <tr><td>404</td><td>Resource not found</td></tr>
+              <tr><td>500</td><td>Server error or permission denied</td></tr>
+            </tbody>
+          </table>
+          <h4>The Three APIs Used in Class</h4>
+          <ul>
+            <li><strong>IP geolocation (ipapi.co):</strong> returns city, region, country, zip, lat/lon, ISP. No parameters needed — returns the location of the calling machine. Colab users get different locations depending on which data center they hit (Las Vegas, Singapore, Taiwan, Georgia…).</li>
+            <li><strong>OpenWeatherMap:</strong> current weather + forecasts. Parameters: <code>lat, lon, exclude, units, mode, appid</code> — passed as a <strong>dictionary to requests.get</strong>, never manually concatenated into the URL. Nested response: <code>current.temp</code>, <code>current.humidity</code>, <code>daily[]</code>, <code>hourly[]</code>.</li>
+            <li><strong>News API:</strong> headlines across ~150,000 outlets. Parameters: country, category, apiKey. Response: status, totalResults, articles (author, title, description, url, publishedAt). <em>Paywalled outlets return metadata + URL only, not full content.</em></li>
+          </ul>
+          <div class="callout">
+            <span class="c-label">Chaining APIs — The Mash Pattern</span>
+            <p>Get lat/lon from the IP API → feed directly into the weather API call. The output of one API becomes the parameters of the next.</p>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- OPENAI API -->
+      <div class="sc bl-accent" id="openai-api">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico">🤖</div>
+            <div>
+              <div class="sc-tag">08 · LLM APIs</div>
+              <div class="sc-name">OpenAI API &amp; Structured Outputs</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <h4>get_completion() Wrapper</h4>
+          <ul>
+            <li>Wraps the chat completions call; takes a <strong>system prompt</strong> (persona/behavior) and a <strong>user prompt</strong></li>
+            <li><strong>Temperature (0–2):</strong> low (~0.2) = focused, consistent, factual; high (~1.5) = varied, creative. Use high when generating multiple diverse summaries of the same content.</li>
+            <li><strong>n parameter:</strong> request multiple completions in one call</li>
+          </ul>
+          <h4>Sentiment &amp; Extraction Patterns</h4>
+          <ul>
+            <li><strong>Basic sentiment:</strong> returns a verbose explanation</li>
+            <li><strong>Constrained output:</strong> "respond with only 'positive' or 'negative'" → single word</li>
+            <li><strong>Emotion extraction:</strong> returns a list (satisfaction, gratitude, frustration, disappointment…)</li>
+          </ul>
+          <h4>Structured JSON Output</h4>
+          <ul>
+            <li>Specify the schema in the prompt: <em>"format your response as a JSON object with keys: item, brand, sentiment"</em></li>
+            <li>Add: <em>"if information is not present, use null as the value"</em></li>
+            <li>The API can also <strong>enforce</strong> structure via the <code>response_format</code> parameter with a Pydantic model</li>
+            <li>Increasingly common pattern: unstructured text → structured data pipelines</li>
+          </ul>
+          <div class="anom-list">
+            <div class="anom">
+              <span class="anom-b bad">Don't</span>
+              <div class="anom-text"><strong>Never hardcode API keys</strong> in notebooks or code files — they end up in version control.</div>
+            </div>
+            <div class="anom">
+              <span class="anom-b ok">Do</span>
+              <div class="anom-text">Store keys in a <strong>cloud secret manager</strong> (e.g., Google Cloud Secret Manager) and access them via the secret manager API at runtime.</div>
+            </div>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="divider">Afternoon — Citi Bike Pipeline Project</div>
+
+      <!-- CITIBIKE -->
+      <div class="sc bl-amber" id="citibike">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico amber">🚲</div>
+            <div>
+              <div class="sc-tag amber">09 · Hands-On Project</div>
+              <div class="sc-name">Citi Bike Pipeline → Streamlit Dashboard</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <div class="callout amber">
+            <span class="c-label">Goal</span>
+            <p>Full working dashboard by 5:30 visualizing <strong>how weather affects NYC Citi Bike trip volume</strong> — snow, rain, wind, temperature, humidity, fog, thunderstorms. Pre-built weather tables: <code>nyu_dataset.weather</code> and <code>weather_daily_new_york_city</code>.</p>
+          </div>
+          <h4>Data Source</h4>
+          <ul>
+            <li>Citi Bike public archive (citibikenyc.com), <strong>~300M trips</strong>, files organized by year then month</li>
+            <li><strong>Schema changed</strong> partway through the archive's history; old and new formats <strong>overlap in a transition period</strong> — must deduplicate</li>
+            <li>JC (Jersey City) files are separate and smaller</li>
+          </ul>
+          <h4>Recommended Pipeline Architecture</h4>
+          <ol>
+            <li>Copy raw zip files to a <strong>Google Cloud Storage bucket</strong> (do not process locally)</li>
+            <li>Load raw files into <strong>BigQuery as raw tables</strong></li>
+            <li>Build a <strong>unified view</strong> reconciling old/new schemas and deduplicating the overlap period</li>
+            <li>Aggregate to a <strong>daily summary table</strong> (trip counts by member type, etc.) — never query 300M rows per visualization</li>
+            <li><strong>Join</strong> daily trip summary with weather_daily on date</li>
+            <li>Build a <strong>Streamlit dashboard</strong> on the joined table → deploy to <strong>Cloud Run</strong></li>
+          </ol>
+          <h4>Development Tips (Prof's)</h4>
+          <ul>
+            <li>Use <strong>temp tables</strong> during development to inspect intermediate results</li>
+            <li><strong>Validate row counts</strong> against a known aggregate from the source before moving on</li>
+            <li>Keep the laptop as a <strong>"dumb remote terminal"</strong> — all heavy processing in the cloud</li>
+            <li>Long Claude Code sessions pollute context and slow responses — <strong>start fresh sessions</strong> and merge pull requests to carry context forward</li>
+            <li>Claude Code saves session context into <strong>PR comments on GitHub</strong> — always merge PRs so the next session can recover prior context</li>
+          </ul>
+          <div class="callout green">
+            <span class="c-label">Status</span>
+            <p><strong>Completed in class</strong> — dashboard built and deployed live on Cloud Run by end of day. Full bug log + fixes saved for the post-module redo.</p>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- EXAM HOOKS -->
+      <div class="divider" id="exam-hooks" style="margin-top:40px">Exam Hooks — Day 3</div>
+
+      <div class="sc bl-amber">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico amber">⭐</div>
+            <div>
+              <div class="sc-tag amber">Quick Reference</div>
+              <div class="sc-name">Things to Know Cold</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <ul>
+            <li><strong>WHERE filters rows before aggregation; HAVING filters aggregates after.</strong> You cannot filter on an aggregate with WHERE.</li>
+            <li><strong>Subquery in HAVING</strong> replaces hardcoded thresholds → portable, reusable queries (national-average pattern).</li>
+            <li><strong>Semi-join</strong> = <code>WHERE id IN (subquery)</code> — filter via another table, return columns from one. <strong>Anti-join</strong> = <code>NOT IN</code> — excludes multi-genre rows entirely; null caveat: rows with no entry at all slip through.</li>
+            <li><strong>Lift</strong> = segment_pct / other_segment_pct; &gt; 1 means over-indexing. Always normalize by group size before comparing imbalanced segments (936 vs. 6,461).</li>
+            <li><strong>Temp table → CTE → view/materialized view</strong> — the development-to-production promotion path.</li>
+            <li><strong>Materialized views:</strong> scheduled vs. incremental (delta) refresh; BigQuery supports both, incremental not for all query types.</li>
+            <li><strong>HTTP codes:</strong> 200 success · 404 not found · 500 server error/permission denied.</li>
+            <li><strong>Pass API params as a dict</strong> to requests.get, never string-concatenate into the URL.</li>
+            <li><strong>Temperature:</strong> low = consistent/factual, high = creative/diverse. Constrain LLM output format in the prompt or enforce with response_format + Pydantic.</li>
+            <li><strong>Secrets live in a secret manager</strong>, never in code.</li>
+            <li><strong>Pipeline shape:</strong> raw files → GCS bucket → BigQuery raw → unified view → daily aggregate → join weather → Streamlit on Cloud Run.</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <!-- NEXT STEPS -->
+      <div class="divider" id="next-steps">Next Steps</div>
+
+      <div class="sc bl-green">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico green">✅</div>
+            <div>
+              <div class="sc-tag green">Action Items</div>
+              <div class="sc-name">To Do After Class</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+          <ol>
+            <li><strong>Complete the Citi Bike pipeline</strong> — bucket copy, BigQuery load, unified view, daily aggregation, weather join <em>(done in class — dashboard live)</em></li>
+            <li><strong>Build &amp; deploy the Streamlit dashboard</strong> to Cloud Run <em>(done — live)</em></li>
+            <li><strong>Vote for class rep</strong> before Thursday night (deadline)</li>
+            <li>Decision Models module starts Thursday Jun 11</li>
+          </ol>
+        </div></div>
+      </div>
+
+    </div><!-- /day3 -->
+
+    <!-- ASSIGNMENTS -->
+    <div id="panel-assignments" class="day-panel">
+      <div class="divider" id="assignments">Assignments &amp; Deadlines</div>
+
+      <div class="assign-card">
+        <div class="ac-ico">✅</div>
+        <div class="ac-b">
+          <div class="ac-label">Pre-module <span class="done-badge">✓ done</span></div>
+          <div class="ac-title">Introduction to Python Notebooks</div>
+          <div class="ac-desc">github.com/ipeirotis/introduction-to-python notebooks + Google Colab and MySQL Workbench setup.</div>
+          <div class="ac-due">Completed: <span>before Jun 10</span></div>
+        </div>
+      </div>
+
+      <div class="assign-card">
+        <div class="ac-ico">🚲</div>
+        <div class="ac-b">
+          <div class="ac-label">In-class · Day 3 <span class="done-badge">✓ done · live</span></div>
+          <div class="ac-title">Citi Bike Pipeline + Streamlit Dashboard</div>
+          <div class="ac-desc">S3 archive → GCS → BigQuery → unified view → daily aggregate → weather join → Streamlit on Cloud Run. Dashboard deployed live. Will be REDONE as part of post-module — read the saved bug log first.</div>
+          <div class="ac-due">Completed: <span>Jun 10, 2026</span></div>
+        </div>
+      </div>
+
+      <div class="assign-card">
+        <div class="ac-ico">🗄️</div>
+        <div class="ac-b">
+          <div class="ac-label">Post-module Exercise 1</div>
+          <div class="ac-title">BigQuery Database Interaction</div>
+          <div class="ac-desc">Query the nyu-datasets BigQuery dataset using Python (google-cloud-bigquery in Colab).</div>
+          <div class="ac-due">Due: <span>post-module</span> · No late submissions</div>
+        </div>
+      </div>
+
+      <div class="assign-card">
+        <div class="ac-ico">🤖</div>
+        <div class="ac-b">
+          <div class="ac-label">Post-module Exercise 2</div>
+          <div class="ac-title">Web APIs + ChatGPT API Automation</div>
+          <div class="ac-desc">Combine a public Web API with OpenAI API calls to automate a data task — follows the NewsAPI + OpenAI sentiment pattern from class (notebooks A2/A3).</div>
+          <div class="ac-due">Due: <span>post-module</span> · No late submissions</div>
+        </div>
+      </div>
+
+    </div><!-- /assignments -->
+
+  </div><!-- /content -->
+</div><!-- /main -->
 
 <script>
-const KEY = 'notes-unlocked';
-const PWD = 'huncho';
-if (sessionStorage.getItem(KEY) === 'true') {
-  document.getElementById('gate').style.display = 'none';
-  document.getElementById('main').style.display = 'block';
-}
+const KEY = 'notes-unlocked', PWD = 'huncho';
+if (sessionStorage.getItem(KEY) === 'true') unlock();
 document.getElementById('gate-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
 function tryUnlock() {
-  const val = document.getElementById('gate-input').value.trim().toLowerCase();
-  if (val === PWD) {
-    sessionStorage.setItem(KEY, 'true');
-    document.getElementById('gate').style.display = 'none';
-    document.getElementById('main').style.display = 'block';
+  if (document.getElementById('gate-input').value.trim().toLowerCase() === PWD) {
+    sessionStorage.setItem(KEY, 'true'); unlock();
   } else {
     document.getElementById('gate-err').textContent = 'wrong password';
     document.getElementById('gate-input').value = '';
   }
 }
+function unlock() {
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('sidebar').style.display = 'block';
+  document.getElementById('main').style.display = 'block';
+}
+
+function toggle(hdr) { hdr.closest('.sc').classList.toggle('open'); }
+
+document.querySelectorAll('.day-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.day-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+  });
+});
+
+const navLinks = document.querySelectorAll('.sb-nav a[href^="#"]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+    }
+  });
+}, { rootMargin: '-25% 0px -65% 0px' });
+document.querySelectorAll('[id]').forEach(s => observer.observe(s));
 </script>
 </body>
 </html>
