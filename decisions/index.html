@@ -7,86 +7,150 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
+:root {
+  --bg:      #0a1410;
+  --surface: #0d1a14;
+  --card:    #101e17;
+  --border:  #1d3328;
+  --accent:  #34d399;
+  --accent-soft: rgba(52,211,153,.08);
+  --amber:   #fbbf24;
+  --green:   #34d399;
+  --sky:     #38bdf8;
+  --red:     #f87171;
+  --text:    #e3f0e9;
+  --muted:   #74a18b;
+  --faint:   #24402f;
+  --sidebar-w: 256px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
-
-:root {
-  --bg:      #f0fdf7;
-  --surface: #e6faf2;
-  --card:    #ffffff;
-  --border-soft: rgba(0,0,0,.07);
-  --text:    #0f2c20;
-  --muted:   #4d8068;
-  --faint:   #a8d5c0;
-  --accent:  #059669;
-  --accent-bright: #34d399;
-  --accent-glow: rgba(5,150,105,.15);
-  --accent-soft: rgba(5,150,105,.08);
-}
-
 body {
   background: var(--bg); color: var(--text);
   font-family: 'Lora', Georgia, serif;
-  min-height: 100vh; display: flex; flex-direction: column;
-  align-items: center; overflow-x: hidden; position: relative;
+  font-size: 16px; line-height: 1.75;
+  display: flex; min-height: 100vh; overflow-x: hidden;
 }
 body::before {
   content: ''; position: fixed; inset: 0;
-  background-image: radial-gradient(circle, rgba(5,150,105,.06) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(52,211,153,.04) 1px, transparent 1px);
   background-size: 28px 28px; pointer-events: none; z-index: 0;
 }
-
-#gate { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-.gate-box { background: var(--card); border: 1px solid var(--border-soft); border-radius: 16px; padding: 40px 44px; max-width: 360px; width: 90%; text-align: center; box-shadow: 0 4px 24px rgba(0,0,0,.06); }
-.gate-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
-.gate-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); margin-bottom: 24px; line-height: 1.3; }
-.gate-input { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-soft); background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: .08em; outline: none; text-align: center; transition: border-color .2s; }
-.gate-input:focus { border-color: var(--accent); }
-.gate-btn { margin-top: 12px; width: 100%; padding: 10px; border-radius: 8px; border: none; cursor: pointer; background: var(--accent); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; transition: opacity .2s; }
-.gate-btn:hover { opacity: .85; }
-.gate-err { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #ef4444; margin-top: 10px; min-height: 16px; }
-
-.wrapper { width: 100%; max-width: 860px; padding: 64px 28px 96px; position: relative; z-index: 1; }
-.back-nav { display: inline-flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); text-decoration: none; letter-spacing: .06em; margin-bottom: 36px; opacity: .75; transition: opacity .2s, color .2s; }
-.back-nav:hover { opacity: 1; color: var(--accent); }
-
-.course-pill { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); border: 1px solid rgba(5,150,105,.2); border-radius: 20px; padding: 4px 14px; display: inline-block; margin-bottom: 20px; }
-.page-title { font-family: 'DM Serif Display', serif; font-size: clamp(32px,5vw,48px); line-height: 1.15; color: var(--text); margin-bottom: 8px; }
-.page-title em { font-style: italic; color: var(--accent); }
-.page-sub { font-size: 15px; color: var(--muted); font-style: italic; margin-bottom: 24px; }
-.meta-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 52px; }
-.meta-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); background: var(--card); border: 1px solid var(--border-soft); border-radius: 6px; padding: 5px 12px; }
-.meta-chip.hi { color: var(--accent); background: var(--accent-soft); border-color: rgba(5,150,105,.2); }
-
-.section { margin-bottom: 52px; }
-.section-label { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin-bottom: 16px; padding-left: 2px; }
-
-.empty-state { border: 1px dashed rgba(5,150,105,.25); border-radius: 12px; padding: 36px 28px; text-align: center; color: var(--muted); }
-.empty-icon { font-size: 28px; margin-bottom: 12px; }
-.empty-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); margin-bottom: 6px; }
-.empty-text { font-size: 14px; font-style: italic; }
-
-.assignment-card { background: var(--card); border: 1px solid var(--border-soft); border-radius: 12px; padding: 22px 24px; margin-bottom: 12px; display: flex; gap: 18px; align-items: flex-start; box-shadow: 0 2px 8px rgba(0,0,0,.04); }
-.ac-badge { flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); border: 1px solid rgba(5,150,105,.15); display: flex; align-items: center; justify-content: center; font-size: 16px; }
-.ac-body { flex: 1; }
-.ac-label { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
-.ac-title { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--text); margin-bottom: 4px; }
-.ac-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
-.ac-due { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); margin-top: 8px; }
-.ac-due span { color: var(--accent); font-weight: 600; }
-
-.weight-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
-.weight-chip { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; padding: 2px 8px; border-radius: 20px; background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(5,150,105,.2); }
-
-.late-policy {
-  background: var(--card); border: 1px solid var(--border-soft);
-  border-radius: 12px; padding: 18px 22px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.04);
+body::after {
+  content: ''; position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 400px;
+  background: radial-gradient(ellipse, rgba(52,211,153,.07) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
 }
-.late-policy .lp-title { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
-.lp-row { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--muted); padding: 5px 0; border-bottom: 1px solid var(--border-soft); }
-.lp-row:last-child { border-bottom: 0; }
-.lp-row .penalty { color: #ef4444; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 700; }
+/* GATE */
+#gate { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.gate-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px 44px; max-width: 360px; width: 90%; text-align: center; }
+.gate-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
+.gate-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); margin-bottom: 24px; }
+.gate-input { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: .08em; outline: none; text-align: center; transition: border-color .2s; }
+.gate-input:focus { border-color: var(--accent); }
+.gate-btn { margin-top: 12px; width: 100%; padding: 10px; border-radius: 8px; border: none; cursor: pointer; background: var(--accent); color: #0a1410; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; transition: opacity .2s; }
+.gate-btn:hover { opacity: .85; }
+.gate-err { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--red); margin-top: 10px; min-height: 16px; }
+/* SIDEBAR */
+#sidebar { position: fixed; top: 0; left: 0; width: var(--sidebar-w); height: 100vh; background: rgba(10,20,16,.97); border-right: 1px solid var(--border); backdrop-filter: blur(12px); overflow-y: auto; overflow-x: hidden; z-index: 100; padding: 24px 0 40px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.sb-brand { padding: 0 18px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.sb-badge { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); border: 1px solid rgba(52,211,153,.25); border-radius: 4px; padding: 3px 8px; margin-bottom: 8px; }
+.sb-title { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--text); line-height: 1.3; }
+.sb-sub { font-size: 12px; color: var(--muted); margin-top: 3px; font-style: italic; }
+.sb-group { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); padding: 14px 18px 5px; }
+.sb-nav a { display: flex; align-items: center; gap: 9px; padding: 7px 18px; text-decoration: none; font-size: 13px; color: var(--muted); transition: color .15s, background .15s; border-left: 2px solid transparent; }
+.sb-nav a:hover { color: var(--text); background: rgba(255,255,255,.03); }
+.sb-nav a.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-soft); }
+.sb-nav .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--faint); flex-shrink: 0; transition: background .15s; }
+.sb-nav a.active .dot { background: var(--accent); }
+.sb-back-row { border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.sb-back-row a { display: flex; align-items: center; gap: 8px; padding: 12px 18px; text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: .05em; color: var(--muted); transition: color .15s, background .15s; }
+.sb-back-row a:hover { color: var(--text); background: rgba(255,255,255,.03); }
+/* MAIN */
+#main { margin-left: var(--sidebar-w); flex: 1; position: relative; z-index: 1; }
+#hdr { padding: 48px 56px 32px; border-bottom: 1px solid var(--border); }
+.hdr-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.hdr-title { font-family: 'DM Serif Display', serif; font-size: 42px; color: var(--text); line-height: 1.15; margin-bottom: 6px; }
+.hdr-title span { color: var(--accent); }
+.hdr-sub { color: var(--muted); font-size: 15px; margin-bottom: 28px; font-style: italic; }
+.day-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.day-tab { padding: 8px 20px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .07em; cursor: pointer; border: 1px solid var(--border); color: var(--muted); background: transparent; transition: all .2s; }
+.day-tab:hover { color: var(--text); border-color: var(--accent); }
+.day-tab.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+#content { padding: 36px 56px 80px; }
+.day-panel { display: none; }
+.day-panel.active { display: block; }
+/* SECTION CARD */
+.sc { background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 16px; overflow: hidden; transition: box-shadow .2s, transform .18s; animation: fadeUp .45s cubic-bezier(.16,1,.3,1) both; }
+.sc:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,.35); }
+.sc.bl-accent { border-left: 3px solid var(--accent); }
+.sc.bl-amber  { border-left: 3px solid var(--amber); }
+.sc.bl-sky    { border-left: 3px solid var(--sky); }
+.sc-hdr { padding: 20px 24px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 16px; user-select: none; transition: background .15s; }
+.sc-hdr:hover { background: rgba(255,255,255,.02); }
+.sc-hdr-l { display: flex; align-items: center; gap: 14px; }
+.sc-ico { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; background: var(--accent-soft); border: 1px solid rgba(52,211,153,.2); }
+.sc-ico.amber { background: rgba(251,191,36,.1); border-color: rgba(251,191,36,.2); }
+.sc-ico.sky { background: rgba(56,189,248,.1); border-color: rgba(56,189,248,.2); }
+.sc-tag { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); margin-bottom: 3px; }
+.sc-tag.amber { color: var(--amber); }
+.sc-tag.sky { color: var(--sky); }
+.sc-name { font-family: 'DM Serif Display', serif; font-size: 19px; color: var(--text); line-height: 1.25; }
+.chevron { color: var(--muted); transition: transform .25s; font-size: 14px; flex-shrink: 0; opacity: .7; }
+.sc.open .chevron { transform: rotate(180deg); }
+.sc-body { max-height: 0; overflow: hidden; transition: max-height .4s ease, opacity .3s ease; opacity: 0; }
+.sc.open .sc-body { max-height: 6000px; opacity: 1; }
+.sc-in { padding: 4px 28px 28px 80px; border-top: 1px solid var(--border); }
+/* PROSE */
+.sc-in p { margin-bottom: 14px; color: rgba(227,240,233,.88); }
+.sc-in p:last-child { margin-bottom: 0; }
+.sc-in strong, .sc-in b { color: var(--text); font-weight: 600; }
+.sc-in em { color: var(--accent); font-style: italic; }
+.sc-in ul { padding-left: 20px; margin-bottom: 14px; color: rgba(227,240,233,.85); }
+.sc-in li { margin-bottom: 7px; }
+.sc-in li::marker { color: var(--accent); }
+.sc-in ol { list-style: none; padding-left: 0; margin-bottom: 14px; counter-reset: step; }
+.sc-in ol li { counter-increment: step; display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; color: rgba(227,240,233,.85); }
+.sc-in ol li::before { content: counter(step); flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-soft); border: 1px solid rgba(52,211,153,.2); color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.sc-in h4 { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--text); margin: 22px 0 9px; padding-bottom: 5px; border-bottom: 1px solid var(--border); }
+/* CALLOUT */
+.callout { background: var(--accent-soft); border: 1px solid rgba(52,211,153,.2); border-radius: 9px; padding: 15px 18px; margin: 16px 0; }
+.callout.amber { background: rgba(251,191,36,.08); border-color: rgba(251,191,36,.22); }
+.callout.sky { background: rgba(56,189,248,.07); border-color: rgba(56,189,248,.22); }
+.c-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 7px; }
+.callout.amber .c-label { color: var(--amber); }
+.callout.sky .c-label { color: var(--sky); }
+.callout p { color: rgba(227,240,233,.88); margin: 0; font-size: 14.5px; line-height: 1.65; }
+/* TABLE */
+.dt { width: 100%; border-collapse: collapse; font-size: 14px; margin: 14px 0; }
+.dt th { background: var(--accent-soft); color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+.dt td { padding: 10px 14px; border-bottom: 1px solid rgba(29,51,40,.6); color: rgba(227,240,233,.82); vertical-align: top; line-height: 1.55; }
+.dt td:first-child { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: nowrap; }
+.dt td strong { color: var(--text); }
+.dt tr:last-child td { border-bottom: 0; }
+.dt tr:hover td { background: rgba(52,211,153,.03); }
+code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: rgba(52,211,153,.09); color: var(--accent); border-radius: 4px; padding: 1px 6px; }
+/* ASSIGNMENTS */
+.assign-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; margin-bottom: 12px; display: flex; gap: 18px; align-items: flex-start; }
+.ac-ico { flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); border: 1px solid rgba(52,211,153,.2); display: flex; align-items: center; justify-content: center; font-size: 17px; }
+.ac-b { flex: 1; }
+.ac-label { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
+.ac-title { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--text); margin-bottom: 4px; }
+.ac-desc { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
+.ac-due { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); margin-top: 8px; }
+.ac-due span { color: var(--accent); }
+.divider { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin: 32px 0 14px; padding-left: 2px; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 880px) {
+  #sidebar { display: none !important; }
+  #main { margin-left: 0; }
+  #hdr, #content { padding-left: 22px; padding-right: 22px; }
+  .sc-in { padding-left: 24px; }
+}
 </style>
 </head>
 <body>
@@ -101,83 +165,403 @@ body::before {
   </div>
 </div>
 
-<div id="main" style="display:none; width:100%;">
-<div class="wrapper">
-
-  <a class="back-nav" href="../">← Module 2 hub</a>
-
-  <div class="course-pill">DM · Thu–Fri Jun 11–12</div>
-  <h1 class="page-title">Decision Models<br /><em>&amp; Analytics</em></h1>
-  <p class="page-sub">Prof. Jiawei Zhang · LP · Simulation · Excel Solver</p>
-
-  <div class="meta-row">
-    <span class="meta-chip hi">Thu–Fri Jun 11–12</span>
-    <span class="meta-chip">Linear Programming</span>
-    <span class="meta-chip">Integer Programming</span>
-    <span class="meta-chip">Monte Carlo</span>
-    <span class="meta-chip">Excel Solver</span>
-    <span class="meta-chip">Crystal Ball</span>
+<nav id="sidebar" style="display:none">
+  <div class="sb-back-row"><a href="../">← Module 2 hub</a></div>
+  <div class="sb-brand">
+    <div class="sb-badge">DM · Module 2</div>
+    <div class="sb-title">Decision Models<br>&amp; Analytics</div>
+    <div class="sb-sub">Prof. Jiawei Zhang</div>
   </div>
+  <div class="sb-group">Day 4 — Jun 11</div>
+  <div class="sb-nav">
+    <a href="#pred-vs-dec"><span class="dot"></span>Prediction vs Decision</a>
+    <a href="#framework"><span class="dot"></span>Analytics Framework</a>
+    <a href="#seven-steps"><span class="dot"></span>7-Step Process</a>
+    <a href="#lp"><span class="dot"></span>Linear Programming</a>
+    <a href="#bonds"><span class="dot"></span>Bond Portfolio LP</a>
+    <a href="#rm"><span class="dot"></span>Revenue Management</a>
+    <a href="#ip"><span class="dot"></span>Integer &amp; Binary IP</a>
+    <a href="#newsvendor"><span class="dot"></span>Newsvendor &amp; Uncertainty</a>
+    <a href="#ai-judgment"><span class="dot"></span>AI &amp; Human Judgment</a>
+  </div>
+  <div class="sb-group">Reference</div>
+  <div class="sb-nav">
+    <a href="#solver-cheat"><span class="dot"></span>Solver Cheat Sheet</a>
+    <a href="#exam-hooks"><span class="dot"></span>Exam Hooks</a>
+    <a href="#assignments-anchor"><span class="dot"></span>Assignments</a>
+  </div>
+</nav>
 
-  <div class="section">
-    <div class="section-label">Lecture Notes</div>
-    <div class="empty-state">
-      <div class="empty-icon">📊</div>
-      <div class="empty-label">No notes yet</div>
-      <div class="empty-text">Notes will be added after the Jun 11–12 sessions.</div>
+<div id="main" style="display:none">
+
+  <div id="hdr">
+    <div class="hdr-eyebrow">NYU Stern · MSBAi · Module 2 · Decision Models</div>
+    <h1 class="hdr-title">Decision Models <span>&amp; Analytics</span></h1>
+    <p class="hdr-sub">Prof. Jiawei Zhang · LP · Integer Programming · Revenue Management · Excel Solver · 1.5 credits</p>
+    <div class="day-tabs">
+      <button class="day-tab active" data-panel="day4">Day 4 — Thu Jun 11</button>
+      <button class="day-tab" data-panel="assignments">Assignments</button>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-label">Key Concepts</div>
-    <div class="empty-state">
-      <div class="empty-icon">💡</div>
-      <div class="empty-label">Coming soon</div>
-      <div class="empty-text">LP formulation, Solver setup, Newsvendor model, integer programming, Monte Carlo simulation with Crystal Ball.</div>
+  <div id="content">
+
+  <!-- ============ DAY 4 ============ -->
+  <div id="panel-day4" class="day-panel active">
+
+    <div class="divider">Morning — Why Decision Models Exist</div>
+
+    <div class="sc bl-accent open" id="pred-vs-dec">
+      <div class="sc-hdr" onclick="toggle(this)">
+        <div class="sc-hdr-l">
+          <div class="sc-ico">🎯</div>
+          <div><div class="sc-tag">Core Thesis</div><div class="sc-name">Prediction Is Not a Decision</div></div>
+        </div><span class="chevron">▾</span>
+      </div>
+      <div class="sc-body"><div class="sc-in">
+        <p>The single most important idea of the course: <strong>a forecast is not an action.</strong> No prediction is 100% accurate — non-zero error is universal — so you need a second, <em>prescriptive</em> model to convert the forecast into the optimal decision.</p>
+        <div class="callout amber"><span class="c-label">The wrong (common) practice</span>
+        <p>Take the ML forecast, add a 10% buffer, call that the order quantity. This ignores the cost asymmetry between over- and under-ordering and the full shape of the error distribution.</p></div>
+        <h4>The two-step process used in real projects</h4>
+        <ol>
+          <li><strong>Predictive model</strong> → generates the demand forecast (regression, random forest, LLMs)</li>
+          <li><strong>Prescriptive/optimization model</strong> → translates forecast + error distribution into the optimal decision</li>
+        </ol>
+        <h4>Real case: flash-sale online retailer</h4>
+        <p>Client's team predicted demand for new items with ML on 10–12 features (brand, price, CPU, memory, battery…) and used the <strong>point prediction (e.g., 200 units) directly as the order quantity</strong>. The professor's team kept the same prediction quality but added an optimization layer — <em>decision quality beat the client's by a large margin</em>. Same forecast, better decision.</p>
+        <p>Alibaba now uses LLMs on proprietary data for demand prediction — but the prescriptive layer is still what converts it to money.</p>
+      </div></div>
     </div>
-  </div>
 
-  <div class="section">
-    <div class="section-label">Assignments</div>
+    <div class="sc bl-accent" id="framework">
+      <div class="sc-hdr" onclick="toggle(this)">
+        <div class="sc-hdr-l">
+          <div class="sc-ico">🧭</div>
+          <div><div class="sc-tag">Framework</div><div class="sc-name">Descriptive → Predictive → Prescriptive</div></div>
+        </div><span class="chevron">▾</span>
+      </div>
+      <div class="sc-body"><div class="sc-in">
+        <table class="dt">
+          <tr><th>Layer</th><th>Question</th><th>Tools</th></tr>
+          <tr><td>Descriptive</td><td><strong>What happened?</strong> Historical insight</td><td>Dashboards, SQL, BI</td></tr>
+          <tr><td>Predictive</td><td><strong>What will happen?</strong></td><td>Regression, ML, time series, LLMs</td></tr>
+          <tr><td>Prescriptive</td><td><strong>What should we do?</strong> ← this course</td><td>LP, IP, simulation, Solver</td></tr>
+        </table>
+        <h4>Real case: Deutsche Bank wealth management</h4>
+        <ul>
+          <li>Hundreds of millions in daily trading volume; regulation requires covering <strong>95% of daily cash redemptions</strong></li>
+          <li>Too much cash held → opportunity cost; too little → expensive market borrowing</li>
+          <li>Predictive insight: redemptions spike at month start/end and around holidays — but even sophisticated ML gave poor <em>point</em> predictions due to volatility</li>
+          <li>Fix: predictive model for demand + <strong>inventory-style optimization for the cash level</strong> → saved <strong>hundreds of millions annually</strong></li>
+        </ul>
+        <div class="callout"><span class="c-label">Takeaway</span><p>Data and prediction are necessary but not sufficient. The prescriptive model is what drives the value.</p></div>
+      </div></div>
+    </div>
 
-    <div class="assignment-card">
-      <div class="ac-badge">📦</div>
-      <div class="ac-body">
+    <div class="sc bl-accent" id="seven-steps">
+      <div class="sc-hdr" onclick="toggle(this)">
+        <div class="sc-hdr-l">
+          <div class="sc-ico">🪜</div>
+          <div><div class="sc-tag">Method</div><div class="sc-name">The Seven-Step Decision Modeling Process</div></div>
+        </div><span class="chevron">▾</span>
+      </div>
+      <div class="sc-body"><div class="sc-in">
+        <ol>
+          <li><strong>Define the problem</strong> — the most important step</li>
+          <li><strong>Collect data</strong> needed to solve that problem</li>
+          <li><strong>Build</strong> the formal decision model</li>
+          <li><strong>Solve</strong> the model</li>
+          <li><strong>Validate</strong> — does the solution make sense? does it beat current practice?</li>
+          <li><strong>Sensitivity analysis</strong> — how does the solution change as inputs vary?</li>
+          <li><strong>Implement</strong> and deploy</li>
+        </ol>
+        <h4>Problem definition = 3 components</h4>
+        <ul>
+          <li><strong>Decisions</strong> — what is genuinely under your control</li>
+          <li><strong>Performance metric</strong> — how success is defined and measured</li>
+          <li><strong>Constraints</strong> — what restricts feasible choices</li>
+        </ul>
+        <p>Iteration is expected: stakeholders reveal hidden constraints only after seeing a draft solution ("we can't do that"). Faculty-scheduling preferences surface only after the first draft schedule circulates.</p>
+        <div class="callout amber"><span class="c-label">Amazon lesson — the project that died at step 1</span>
+        <p>A mathematically optimal flexible warehouse-routing model was rejected by the head of logistics: existing contracts locked regions to specific warehouses. "Decisions to be made" were defined too broadly and the whole project went unused. <strong>Always confirm what's actually under control before modeling.</strong></p></div>
+        <p><em>Steps 3–4 are increasingly automatable by AI. Steps 1 and 5 — definition and validation — are where human judgment adds the most value.</em></p>
+      </div></div>
+    </div>
+
+    <div class="divider">Linear Programming</div>
+
+    <div class="sc bl-sky" id="lp">
+      <div class="sc-hdr" onclick="toggle(this)">
+        <div class="sc-hdr-l">
+          <div class="sc-ico sky">📐</div>
+          <div><div class="sc-tag sky">Foundations</div><div class="sc-name">Linear Programming — The Workhorse</div></div>
+        </div><span class="chevron">▾</span>
+      </div>
+      <div class="sc-body"><div class="sc-in">
+        <p>Every LP has three parts: <strong>decision variables</strong> (what you control), a linear <strong>objective</strong> (max/min a SUMPRODUCT), and linear <strong>constraints</strong>. "Linear" = no variables multiplied together, no squares, no IF statements.</p>
+        <h4>Key vocabulary (exam-grade definitions)</h4>
+        <table class="dt">
+          <tr><th>Term</th><th>Meaning</th></tr>
+          <tr><td>Feasible solution</td><td>Satisfies <strong>all</strong> constraints — but may not be optimal</td></tr>
+          <tr><td>Optimal solution</td><td>Feasible <strong>and</strong> best objective value</td></tr>
+          <tr><td>Multiple optima</td><td>Different decision values, <strong>same</strong> objective value</td></tr>
+          <tr><td>Binding constraint</td><td>Used to its limit; non-zero shadow price</td></tr>
+          <tr><td>Shadow price</td><td>Marginal value of relaxing a constraint by one unit</td></tr>
+        </table>
+        <div class="callout sky"><span class="c-label">Scale of practice</span><p>95% of Fortune 500 companies solve LPs every day; commercial solvers handle tens to hundreds of millions of variables.</p></div>
+      </div></div>
+    </div>
+
+    <div class="sc bl-sky" id="bonds">
+      <div class="sc-hdr" onclick="toggle(this)">
+        <div class="sc-hdr-l">
+          <div class="sc-ico sky">💼</div>
+          <div><div class="sc-tag sky">Worked Case · GreenField</div><div class="sc-name">Bond Portfolio LP — $150M Allocation</div></div>
+        </div><span class="chevron">▾</span>
+      </div>
+      <div class="sc-body"><div class="sc-in">
+        <p>Investment committee allocates <strong>$150M across corporate bonds</strong>. Yields range 3.4%–7.5% (higher yield ⇒ higher default risk, 0.5%–30% PD; recovery rates vary).</p>
+        <h4>Model</h4>
+        <ul>
+          <li><strong>Decisions:</strong> portfolio weight per bond (continuous, ≥0, sum to 100%)</li>
+          <li><strong>Objective:</strong> maximize weighted average yield = <code>SUMPRODUCT(yields, weights)</code></li>
+          <li><strong>Constraints:</strong> below-investment-grade (B/B+/BB) ≤ 25% · long-maturity (≥10y) ≥ 30% · Σw = 1</li>
+          <li>Flag columns: <code>=IF(OR(D2="B",D2="BB",D2="B+"),1,0)</code> and <code>=IF(H2&gt;=10,1,0)</code>, then SUMPRODUCT with weights</li>
+        </ul>
+        <h4>What the solution taught</h4>
+        <ul>
+          <li>Without a per-name cap the LP concentrated in just <strong>3 bonds</strong> — feasible, optimal, terrible practice</li>
+          <li>Adding a <strong>20% per-company cap</strong> cost only 0.05% of yield (5.445% → <strong>5.395%</strong>) for real diversification</li>
+          <li>Sector caps (35–40%) are the next layer</li>
+        </ul>
+        <h4>Sensitivity (what to tell the committee)</h4>
+        <ul>
+          <li>Risky cap 25% → 26% buys ≈ <strong>+0.025%</strong> yield</li>
+          <li>Long-maturity floor 30% → 25% buys ≈ <strong>+0.5%</strong> yield — the expensive constraint</li>
+        </ul>
+        <div class="callout"><span class="c-label">Solved in class — optimal 5.395%</span><p>Software .20 · Telecom .20 · Auto Mfr .20 · Green Energy .10 · Construction .15 · Luxury .15 — all three policy constraints binding. Green Energy pulls double duty (risky <em>and</em> long-maturity). Tomorrow: Monte Carlo on this portfolio to expose the default-risk tail the LP ignores.</p></div>
+      </div></div>
+    </div>
+
+    <div class="divider">Revenue Management</div>
+
+    <div class="sc bl-accent" id="rm">
+      <div class="sc-hdr" onclick="toggle(this)">
+        <div class="sc-hdr-l">
+          <div class="sc-ico">✈️</div>
+          <div><div class="sc-tag">Worked Case · VacationAir</div><div class="sc-name">Revenue Management — Airline Seat Allocation</div></div>
+        </div><span class="chevron">▾</span>
+      </div>
+      <div class="sc-body"><div class="sc-in">
+        <h4>The history (great exam color)</h4>
+        <ul>
+          <li><strong>1978 Airline Deregulation Act</strong>: before, government set fares (NYC–LA round trip ≈ $1,400 inflation-adjusted); after, 200+ airlines entered, fares fell 40%+</li>
+          <li><strong>People Express</strong> (1981) → 5th-largest US carrier in 4 years → collapsed 1986 after American's 1985 "Ultimate Super Saver" fares</li>
+          <li>Discount restrictions (30-day advance, non-refundable, <strong>Saturday-night stay</strong>) were engineered to exclude business travelers — <em>price discrimination via product design</em>, not illegal price-setting</li>
+          <li>American: <strong>$1.4B incremental revenue over 3 years</strong> (~$500M/yr). Hotels $300M+, National Car Rental saved from liquidation, broadcast networks $1B+</li>
+        </ul>
+        <h4>The VacationAir model</h4>
+        <ul>
+          <li>Hub-and-spoke: Pittsburgh + Newark → <strong>Charlotte (hub)</strong> → Myrtle Beach + Orlando; 2 aircraft, 4 legs, 16 ODIFs (itinerary × Y/Q fare class)</li>
+          <li><strong>Decision:</strong> booking limit per ODIF · <strong>Objective:</strong> max revenue = SUMPRODUCT(fares, limits)</li>
+          <li><strong>Constraints:</strong> limit ≤ demand forecast; seats per <em>leg</em> ≤ capacity — a connecting passenger consumes a seat on <strong>two</strong> legs</li>
+        </ul>
+        <div class="callout"><span class="c-label">Greedy vs LP — the punchline</span>
+        <p>Greedy (fill highest fares first): <strong>$159,325</strong>. LP optimal: <strong>$169,875 — 6.6% more revenue</strong>, a huge profit swing at near-zero airline margins. Greedy fails because cheap single-leg tickets consume less capacity than expensive connecting ones; the LP rations the cheapest Q fares on full legs to protect high-yield connections.</p></div>
+        <h4>When does RM apply? (all four must hold)</h4>
+        <ol>
+          <li>High fixed costs — cost sunk regardless of occupancy</li>
+          <li>Fixed, <strong>perishable</strong> capacity — empty seat worth $0 after departure</li>
+          <li>Capacity can't expand in the short run</li>
+          <li>Heterogeneous willingness to pay across segments</li>
+        </ol>
+        <p>Applies to: airlines, hotels, car rentals, broadcast, sports, fine dining, fashion. <strong>Zara</strong>: fixed seasonal production run, no replenishment — RM pricing added 3–4% revenue.</p>
+        <h4>Implementation &amp; extensions</h4>
+        <ul>
+          <li><strong>Rolling re-optimization:</strong> solve 6 months out → monthly → weekly → daily → every few days in the final week (cancellations &amp; no-shows)</li>
+          <li><strong>Overbooking:</strong> 10–15% no-show rate; model no-shows as a random variable, balance denied-boarding cost vs empty seats; approximation = capacity × (1 + no-show rate). United 2017 forced-removal incident (−$100M+ stock in days) → modern fix: <em>auction</em> voluntary rebooking at the gate, raising the offer until someone accepts</li>
+          <li>Assumptions to challenge: demand known exactly · prices fixed · everyone shows up · no cancellations/misconnects</li>
+        </ul>
+      </div></div>
+    </div>
+
+    <div class="divider">Integer &amp; Binary Programming</div>
+
+    <div class="sc bl-amber" id="ip">
+      <div class="sc-hdr" onclick="toggle(this)">
+        <div class="sc-hdr-l">
+          <div class="sc-ico amber">🔢</div>
+          <div><div class="sc-tag amber">IP / Binary</div><div class="sc-name">Integer Programming — Yes/No Decisions</div></div>
+        </div><span class="chevron">▾</span>
+      </div>
+      <div class="sc-body"><div class="sc-in">
+        <p>LPs allow fractional answers; many real decisions are whole-number or yes/no. Binary (0/1) variables encode them — and simple linear constraints on binaries encode surprisingly rich logic.</p>
+        <h4>Capital budgeting (7 projects, $15K budget)</h4>
+        <ul>
+          <li>Projects indivisible — fund fully or not at all; x<sub>i</sub> ∈ {0,1}; some ROIs exceed 200–300%, budget is binding</li>
+          <li>Objective = <code>SUMPRODUCT(NPV, x)</code> — <strong>linear</strong> ✓</li>
+          <li>The IF-statement version is <strong>nonlinear</strong> (piecewise) — GRG reports a wrong answer as "optimal." Use <strong>Simplex LP + bin constraints</strong></li>
+          <li><strong>Tolerance trap:</strong> Solver's default Integer Optimality is 1% — it stops within 1% of optimum. Set to <strong>0%</strong> for the true optimum (slower); real-time systems deliberately use looser tolerance</li>
+        </ul>
+        <h4>Logical constraints with binaries (memorize)</h4>
+        <table class="dt">
+          <tr><th>Business rule</th><th>Constraint</th></tr>
+          <tr><td>If 4 then 5</td><td>x₄ − x₅ ≤ 0 (i.e., x₅ ≥ x₄)</td></tr>
+          <tr><td>Both or neither</td><td>x₄ = x₅</td></tr>
+          <tr><td>Exactly one of 1,2,3</td><td>x₁ + x₂ + x₃ = 1</td></tr>
+          <tr><td>At most 3 of 7</td><td>x₁ + … + x₇ ≤ 3</td></tr>
+          <tr><td>At least one of 4,5</td><td>x₄ + x₅ ≥ 1</td></tr>
+          <tr><td>Synergy bonus if 1 &amp; 3</td><td>add binary S with S ≤ x₁, S ≤ x₃; +bonus·S in objective</td></tr>
+        </table>
+        <h4>Ride-hailing matching (Didi, ~2016)</h4>
+        <ul>
+          <li>4 users × 6 cars = 24 binary x<sub>ij</sub>; each user exactly 1 car (Σ = 1), each car ≤ 1 user (Σ ≤ 1); some pairs excluded</li>
+          <li>Objective choice is a business decision: min total wait vs <strong>max matches</strong> — growth-stage Didi chose max matches for market share, weighted by driver acceptance likelihood</li>
+          <li>City scale: ~1,000 requests × 10,000 drivers = <strong>10 million binary variables, re-solved every 2 seconds</strong></li>
+        </ul>
+        <div class="callout amber"><span class="c-label">Why IP is fundamentally harder than LP</span>
+        <p>LP feasible regions are <strong>convex</strong> — any point between two feasible points is feasible. Integer constraints destroy convexity. Rounding is fine for big numbers (16.2 → 16) but catastrophic for binaries (0.5 → 0 or 1 are completely different decisions). That's why IPs can take hours where LPs take seconds.</p></div>
+      </div></div>
+    </div>
+
+    <div class="divider">Decisions Under Uncertainty — Bridge to Day 5</div>
+
+    <div class="sc bl-amber" id="newsvendor">
+      <div class="sc-hdr" onclick="toggle(this)">
+        <div class="sc-hdr-l">
+          <div class="sc-ico amber">📦</div>
+          <div><div class="sc-tag amber">Uncertainty</div><div class="sc-name">Newsvendor Setup &amp; Demand Uncertainty</div></div>
+        </div><span class="chevron">▾</span>
+      </div>
+      <div class="sc-body"><div class="sc-in">
+        <p>New product: price <strong>$100</strong>, cost <strong>$75</strong>, salvage <strong>$25</strong>; ML forecast = 200 units. How many to order <em>before</em> seeing demand?</p>
+        <h4>Error analysis on 500 historical items</h4>
+        <ul>
+          <li>Actual vs forecast scatter: error <strong>grows with forecast magnitude</strong> → use the <strong>ratio</strong> (actual/forecast), not absolute error</li>
+          <li>Ratios span ≈ 0.5–1.5 with a ≈ flat histogram → <strong>Uniform</strong> is the right uncertainty model → demand ~ Uniform[100, 300]</li>
+        </ul>
+        <h4>Immediate implications</h4>
+        <ul>
+          <li><strong>Never order above 300</strong> (guaranteed leftover on every extra unit) or <strong>below 100</strong> (guaranteed lost sales)</li>
+          <li>Intuition says slightly <em>below</em> 200 — correct, because overage cost ($50) &gt; underage cost ($25)</li>
+        </ul>
+        <p>Two questions before deciding: (1) the <strong>risk profile</strong> of a fixed decision under uncertainty, (2) which order quantity optimizes the chosen metric. Scenario analysis (100/200/300) is a start, but probabilities matter — <strong>tomorrow: Monte Carlo with 10,000+ scenarios</strong>, plus simulating the bond portfolio's default tail the LP ignored.</p>
+        <div class="callout"><span class="c-label">Flaw of Averages</span><p>E[f(X)] ≠ f(E[X]). Plugging average demand (200) into the profit model says $5,000; true expected profit at Q=200 ≈ $3,116. Averages lie when payoffs are asymmetric.</p></div>
+      </div></div>
+    </div>
+
+    <div class="sc bl-accent" id="ai-judgment">
+      <div class="sc-hdr" onclick="toggle(this)">
+        <div class="sc-hdr-l">
+          <div class="sc-ico">🤖</div>
+          <div><div class="sc-tag">Perspective</div><div class="sc-name">AI &amp; Human Judgment in Modeling</div></div>
+        </div><span class="chevron">▾</span>
+      </div>
+      <div class="sc-body"><div class="sc-in">
+        <p>AI excels at: writing code, translating formulations, running solvers, debugging, data management. Prof's own example: used <strong>Claude Code</strong> for research experiments — the AI introduced a bug (optimization loop stopped at 2 iterations instead of 50) that took <strong>3 days to catch</strong> because results looked plausible. Once fixed, results matched theory exactly.</p>
+        <h4>Where humans stay essential</h4>
+        <ul>
+          <li>Defining what is genuinely under control vs fixed infrastructure</li>
+          <li>Choosing the right KPI / performance metric</li>
+          <li>Deciding which constraints are realistic vs relaxable</li>
+          <li>Validating that solutions make business sense — and <strong>owning</strong> the decision</li>
+        </ul>
+        <p>Framing: AI as research assistant — set direction, review outputs, check for errors. Students encouraged to screenshot models and have AI code/solve them. Program note: MSBA → <strong>MSAI</strong>; new Agentic AI course being added.</p>
+      </div></div>
+    </div>
+
+    <div class="divider">Reference</div>
+
+    <div class="sc bl-sky" id="solver-cheat">
+      <div class="sc-hdr" onclick="toggle(this)">
+        <div class="sc-hdr-l">
+          <div class="sc-ico sky">🛠️</div>
+          <div><div class="sc-tag sky">Cheat Sheet</div><div class="sc-name">Solver Setup &amp; Method Selection</div></div>
+        </div><span class="chevron">▾</span>
+      </div>
+      <div class="sc-body"><div class="sc-in">
+        <table class="dt">
+          <tr><th>Problem</th><th>Method</th><th>Guarantee</th></tr>
+          <tr><td>Linear (LP)</td><td><strong>Simplex LP</strong></td><td>Global optimum, fast</td></tr>
+          <tr><td>Integer / binary</td><td>Simplex LP + int/bin constraints, Tolerance 0%</td><td>Global (slower)</td></tr>
+          <tr><td>Smooth nonlinear (concave max / convex min)</td><td>GRG Nonlinear</td><td>Global for "nice" functions only</td></tr>
+          <tr><td>IF / MAX / ABS / many local optima</td><td>Evolutionary (+ explicit variable bounds)</td><td>Best-found, not guaranteed</td></tr>
+        </table>
+        <h4>Hard-won debugging lessons (from today)</h4>
+        <ul>
+          <li>Solver returns 0 with a correct setup → check the <strong>objective formula actually computes</strong> (type a test value into a changing cell; the objective must move) and that <strong>Calculation = Automatic</strong></li>
+          <li>"Linearity conditions not satisfied" on Simplex → replace <strong>SUMIF with plain SUMs</strong> of the relevant cells</li>
+          <li>Blank cells in a ≤ RHS column read as 0 → Solver "correctly" forces decisions to 0</li>
+          <li>Always check ● Max vs ○ Value Of: 0 — the classic zero-output trap</li>
+          <li>Crystal Ball: launch from Apps@Stern <strong>before</strong> opening the workbook · Solver: Excel Add-ins → check Solver Add-in</li>
+        </ul>
+      </div></div>
+    </div>
+
+    <div class="sc bl-amber open" id="exam-hooks">
+      <div class="sc-hdr" onclick="toggle(this)">
+        <div class="sc-hdr-l">
+          <div class="sc-ico amber">🎯</div>
+          <div><div class="sc-tag amber">Exam Prep</div><div class="sc-name">Exam Hooks — What He'll Test</div></div>
+        </div><span class="chevron">▾</span>
+      </div>
+      <div class="sc-body"><div class="sc-in">
+        <ul>
+          <li><strong>Prediction ≠ decision</strong> — two-step process; why the +10% buffer heuristic is wrong</li>
+          <li><strong>Problem definition triple:</strong> decisions / metric / constraints — plus the Amazon "what's actually under control" lesson</li>
+          <li><strong>LP vocabulary:</strong> feasible vs optimal vs multiple optima; binding constraints; shadow price = value of one more unit of a resource</li>
+          <li><strong>Binary logic table:</strong> if-then (x₅ ≥ x₄), both/neither (=), exactly one (Σ=1), at most k (Σ≤k), at least one (Σ≥1)</li>
+          <li><strong>Why IP &gt; LP in difficulty:</strong> convexity breaks; rounding fails for binaries; default 1% tolerance hides the true optimum</li>
+          <li><strong>RM criteria</strong> (all 4 must hold) + leg-capacity logic: connecting passenger = 2 seats; greedy $159,325 vs LP $169,875 (+6.6%)</li>
+          <li><strong>Newsvendor:</strong> ratio-based error analysis → Uniform[100,300]; never order outside [100,300]; order below mean when overage &gt; underage; Flaw of Averages E[f(X)] ≠ f(E[X])</li>
+          <li><strong>Solver method selection</strong> — and the case where GRG silently lies (IF-based capital budgeting)</li>
+          <li><strong>Sensitivity framing:</strong> report constraint-relaxation trade-offs to the decision maker (risky cap +1% ⇒ +0.025% yield; long-maturity −5% ⇒ +0.5%)</li>
+        </ul>
+      </div></div>
+    </div>
+
+  </div><!-- /day4 -->
+
+  <!-- ============ ASSIGNMENTS ============ -->
+  <div id="panel-assignments" class="day-panel">
+    <div id="assignments-anchor"></div>
+    <div class="divider">Pre-module — due Jun 8 · 20% each</div>
+
+    <div class="assign-card">
+      <div class="ac-ico">📦</div>
+      <div class="ac-b">
         <div class="ac-label">Pre-module Assignment · 20%</div>
         <div class="ac-title">Problem 1 — Ordering a New Product (Newsvendor)</div>
         <div class="ac-desc">Price $100, cost $75, salvage $25 → Cu=25, Co=50, critical ratio=0.333 → order at 33rd percentile. Use ML forecast=200 + 500 historical items to find error distribution. 1-page report, graded on effort.</div>
-        <div class="ac-due">Due: <span>Jun 8, 2026</span></div>
+        <div class="ac-due">Due: <span>Jun 8, 2026 ✓</span></div>
       </div>
     </div>
 
-    <div class="assignment-card">
-      <div class="ac-badge">⛵</div>
-      <div class="ac-body">
+    <div class="assign-card">
+      <div class="ac-ico">⛵</div>
+      <div class="ac-b">
         <div class="ac-label">Pre-module Assignment · 20%</div>
         <div class="ac-title">Problem 2 — Sailco Production Planning</div>
         <div class="ac-desc">Sell $2,000, cost $1,200, holding $60/unit/qtr, overtime +$200 above 600 reg capacity. Forecast Year 11 Q1–Q4 from 10yr trend + seasonality. 1-page report, effort-based grading.</div>
-        <div class="ac-due">Due: <span>Jun 8, 2026</span></div>
+        <div class="ac-due">Due: <span>Jun 8, 2026 ✓</span></div>
       </div>
     </div>
 
-    <div class="assignment-card">
-      <div class="ac-badge">📐</div>
-      <div class="ac-body">
+    <div class="assign-card">
+      <div class="ac-ico">📐</div>
+      <div class="ac-b">
         <div class="ac-label">Pre-module Assignment · 20%</div>
         <div class="ac-title">Problem 3 — Online Advertising LP</div>
         <div class="ac-desc">Linear program in Excel Solver using OnlineAdvertising_Template.xlsx. Maximize 2.60×Σ(views×CTR) subject to section capacities (Sports≤6M, National≤5M) + per-advertiser minimums (Delta≥2, T-Mobile≥3, CapOne≥2). Submit Excel file, no report.</div>
-        <div class="ac-due">Due: <span>Jun 8, 2026</span></div>
-        <div class="weight-bar">
-          <span class="weight-chip">Need Solver add-in</span>
-          <span class="weight-chip">8 decision cells</span>
-          <span class="weight-chip">Submit .xlsx</span>
-        </div>
+        <div class="ac-due">Due: <span>Jun 8, 2026 ✓</span></div>
       </div>
     </div>
 
-    <div class="assignment-card">
-      <div class="ac-badge">👥</div>
-      <div class="ac-body">
+    <div class="divider">Post-module · 60% total</div>
+
+    <div class="assign-card">
+      <div class="ac-ico">👥</div>
+      <div class="ac-b">
         <div class="ac-label">Post-module Group · 30%</div>
         <div class="ac-title">Group Post-Module Assignment</div>
         <div class="ac-desc">Details TBD in class. Group work on optimization or simulation problem.</div>
@@ -185,51 +569,69 @@ body::before {
       </div>
     </div>
 
-    <div class="assignment-card">
-      <div class="ac-badge">👤</div>
-      <div class="ac-body">
+    <div class="assign-card">
+      <div class="ac-ico">👤</div>
+      <div class="ac-b">
         <div class="ac-label">Post-module Individual · 30%</div>
         <div class="ac-title">Individual Post-Module Assignment</div>
         <div class="ac-desc">Details TBD in class. Individual LP/simulation problem.</div>
         <div class="ac-due">Due: <span>post-module</span></div>
       </div>
     </div>
+  </div><!-- /assignments -->
 
-  </div>
-
-  <div class="section">
-    <div class="section-label">Late Policy</div>
-    <div class="late-policy">
-      <div class="lp-title">Penalty schedule</div>
-      <div class="lp-row"><span>Up to 3 days late</span><span class="penalty">−15%</span></div>
-      <div class="lp-row"><span>3–5 days late</span><span class="penalty">−30%</span></div>
-      <div class="lp-row"><span>5–10 days late</span><span class="penalty">−50%</span></div>
-      <div class="lp-row"><span>Beyond 10 days</span><span class="penalty">0</span></div>
-    </div>
-  </div>
-
-</div>
-</div>
+  </div><!-- /content -->
+</div><!-- /main -->
 
 <script>
-const KEY = 'notes-unlocked';
-const PWD = 'huncho';
-if (sessionStorage.getItem(KEY) === 'true') {
-  document.getElementById('gate').style.display = 'none';
-  document.getElementById('main').style.display = 'block';
-}
+const KEY = 'notes-unlocked', PWD = 'huncho';
+if (sessionStorage.getItem(KEY) === 'true') unlock();
 document.getElementById('gate-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
 function tryUnlock() {
-  const val = document.getElementById('gate-input').value.trim().toLowerCase();
-  if (val === PWD) {
-    sessionStorage.setItem(KEY, 'true');
-    document.getElementById('gate').style.display = 'none';
-    document.getElementById('main').style.display = 'block';
+  if (document.getElementById('gate-input').value.trim().toLowerCase() === PWD) {
+    sessionStorage.setItem(KEY, 'true'); unlock();
   } else {
     document.getElementById('gate-err').textContent = 'wrong password';
     document.getElementById('gate-input').value = '';
   }
 }
+function unlock() {
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('sidebar').style.display = 'block';
+  document.getElementById('main').style.display = 'block';
+}
+function toggle(hdr) { hdr.closest('.sc').classList.toggle('open'); }
+document.querySelectorAll('.day-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.day-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+  });
+});
+const navLinks = document.querySelectorAll('.sb-nav a[href^="#"]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+    }
+  });
+}, { rootMargin: '-25% 0px -65% 0px' });
+document.querySelectorAll('.sc[id]').forEach(s => observer.observe(s));
+/* sidebar link → switch to the panel containing the target, then open the card */
+navLinks.forEach(l => l.addEventListener('click', () => {
+  const id = l.getAttribute('href').slice(1);
+  const target = document.getElementById(id);
+  if (!target) return;
+  const panel = target.closest('.day-panel');
+  if (panel && !panel.classList.contains('active')) {
+    document.querySelectorAll('.day-tab').forEach(t => t.classList.toggle('active', 'panel-' + t.dataset.panel === panel.id));
+    document.querySelectorAll('.day-panel').forEach(p => p.classList.remove('active'));
+    panel.classList.add('active');
+  }
+  const sc = target.classList.contains('sc') ? target : target.closest('.sc');
+  if (sc) sc.classList.add('open');
+}));
 </script>
 </body>
 </html>
