@@ -184,6 +184,19 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: 
     <a href="#newsvendor"><span class="dot"></span>Newsvendor &amp; Uncertainty</a>
     <a href="#ai-judgment"><span class="dot"></span>AI &amp; Human Judgment</a>
   </div>
+  <div class="sb-group">Day 5 — Jun 12</div>
+  <div class="sb-nav">
+    <a href="#matching"><span class="dot"></span>Matching &amp; Fairness</a>
+    <a href="#portfolio-binary"><span class="dot"></span>Binary Portfolio Rules</a>
+    <a href="#tiktalk"><span class="dot"></span>TikTalk Case</a>
+    <a href="#nlp-day5"><span class="dot"></span>NLP: Local vs Global</a>
+    <a href="#markowitz"><span class="dot"></span>Markowitz MV Portfolio</a>
+    <a href="#newsvendor-enum"><span class="dot"></span>Newsvendor Enumeration</a>
+    <a href="#monte-carlo"><span class="dot"></span>Monte Carlo &amp; Crystal Ball</a>
+    <a href="#retirement"><span class="dot"></span>Retirement Simulations</a>
+    <a href="#distributions"><span class="dot"></span>Choosing Distributions</a>
+    <a href="#credit-var"><span class="dot"></span>Credit Risk &amp; VaR</a>
+  </div>
   <div class="sb-group">Reference</div>
   <div class="sb-nav">
     <a href="#solver-cheat"><span class="dot"></span>Solver Cheat Sheet</a>
@@ -200,6 +213,7 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: 
     <p class="hdr-sub">Prof. Jiawei Zhang · LP · Integer Programming · Revenue Management · Excel Solver · 1.5 credits</p>
     <div class="day-tabs">
       <button class="day-tab active" data-panel="day4">Day 4 — Thu Jun 11</button>
+      <button class="day-tab" data-panel="day5">Day 5 — Fri Jun 12</button>
       <button class="day-tab" data-panel="assignments">Assignments</button>
     </div>
   </div>
@@ -521,6 +535,230 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: 
     </div>
 
   </div><!-- /day4 -->
+
+  <!-- ============ DAY 5 ============ -->
+  <div id="panel-day5" class="day-panel">
+
+    <div class="divider">Morning — Binary Variables in the Wild</div>
+
+    <div class="sc bl-accent open" id="matching">
+      <div class="sc-hdr" onclick="toggle(this)">
+        <div class="sc-hdr-l">
+          <div class="sc-ico">🚗</div>
+          <div><div class="sc-tag">Assignment Models</div><div class="sc-name">Matching, Infeasibility &amp; Fairness</div></div>
+        </div><span class="chevron">▾</span>
+      </div>
+      <div class="sc-body"><div class="sc-in">
+        <p>The car/rider matching problem: a binary variable per rider–car pair, each rider matched <strong>exactly once</strong> (row sums = 1), each car used <strong>at most once</strong> (column sums ≤ 1), minimize total waiting time.</p>
+        <h4>Modeling infeasible pairs</h4>
+        <p>Add an <strong>allowed-pair indicator table</strong> (1 = allowed, 0 = not) and constrain <code>decision ≤ indicator</code> — a 0 in the table forces the match variable to 0. Same eligibility trick as the school-bus no-bid cells.</p>
+        <div class="callout amber"><span class="c-label">Validation: efficiency vs fairness</span>
+        <p>Minimizing <em>total</em> wait can leave one rider waiting far longer than everyone else — efficient system-wide, unfair individually. Fix: compute each rider's wait and add a <strong>max-wait constraint</strong>. In class this cut the longest wait <em>without worsening the total</em>.</p></div>
+        <h4>What validation can surface (Uber discussion)</h4>
+        <ul>
+          <li>Rider fares are fixed once requested → platform revenue may not depend on the assignment at all</li>
+          <li>But <strong>driver income</strong> does — minimum-daily-income guarantees can justify steering a high-fare ride to the driver furthest below the floor</li>
+          <li>Same structure everywhere: school buses, eHarmony-style matching, staffing experts to teams — pairwise binaries + score per pair + caps per side</li>
+        </ul>
+      </div></div>
+    </div>
+
+    <div class="sc bl-accent" id="portfolio-binary">
+      <div class="sc-hdr" onclick="toggle(this)">
+        <div class="sc-hdr-l">
+          <div class="sc-ico">💼</div>
+          <div><div class="sc-tag">GreenField Extension</div><div class="sc-name">Cardinality &amp; Minimum-Threshold Constraints</div></div>
+        </div><span class="chevron">▾</span>
+      </div>
+      <div class="sc-body"><div class="sc-in">
+        <p>New requirements on the bond portfolio: limit <em>how many</em> bonds, and if a bond is in, hold a <em>meaningful</em> position. Counting positives with <code>COUNTIF</code> is nonlinear — binaries keep it linear.</p>
+        <table class="dt">
+          <tr><th>Business rule</th><th>Linear form (N = binary "included")</th></tr>
+          <tr><td>If weight &gt; 0, bond is "in"; if out, weight = 0</td><td><code>I ≤ N</code> (per bond)</td></tr>
+          <tr><td>If in, invest at least 15%</td><td><code>I ≥ 0.15 · N</code></td></tr>
+          <tr><td>At most K bonds</td><td><code>SUM(N) ≤ K</code></td></tr>
+        </table>
+        <div class="callout"><span class="c-label">Class result</span>
+        <p>With the 15% minimum (and per-bond 20% cap), the optimum jumped from the six-bond 5.395% portfolio to <strong>five bonds at exactly 20% each → 5.56%</strong> — Bank, Software, Auto Mfr, Construction, Luxury. The whiteboard logic: "if I &gt; 0 then N = 1; if N = 0 then I = 0".</p></div>
+      </div></div>
+    </div>
+
+    <div class="sc bl-accent" id="tiktalk">
+      <div class="sc-hdr" onclick="toggle(this)">
+        <div class="sc-hdr-l">
+          <div class="sc-ico">📱</div>
+          <div><div class="sc-tag">In-Class Case</div><div class="sc-name">TikTalk 2.0 Feature Selection</div></div>
+        </div><span class="chevron">▾</span>
+      </div>
+      <div class="sc-body"><div class="sc-in">
+        <p>Pick from 12 candidate features under dev (≤28 wks), design (≤15 wks), and cloud (≤$80k/mo) capacity, plus business rules — one binary per feature.</p>
+        <h4>The constraint catalog</h4>
+        <ul>
+          <li><strong>Dependency:</strong> Live Shopping / Ad Targeting require Next-Gen Rec → <code>x ≤ x_rec</code></li>
+          <li><strong>Conflict:</strong> Stories vs Long-Form, Duets+ vs Collab Rooms → <code>x₁ + x₂ ≤ 1</code></li>
+          <li><strong>Required category:</strong> at least one safety feature → <code>x₃ + x₁₁ ≥ 1</code></li>
+          <li><strong>Conditional cap (the star):</strong> 3 experimental features normally, 5 if the Experiment Platform ships → <code>Σ experimental ≤ 3 + 2·x₁₂</code>. A decision variable on the RHS makes the limit conditional <em>while staying linear</em>.</li>
+        </ul>
+        <h4>Multiple objectives → weights</h4>
+        <p>Adding acquisition + engagement + revenue treats all goals equally. Class weights: <strong>Acq 40% / Eng 40% / Rev 20%</strong> — a startup would tilt to acquisition, a public company to revenue. Sensitivity-test the weights.</p>
+        <div class="callout amber"><span class="c-label">Hard vs soft constraints</span>
+        <p><strong>Hard:</strong> capacities, budget, safety, dependencies, conflicts — must hold. <strong>Soft:</strong> the risk threshold — the case gives no number, so solve with hard constraints first, <em>look</em> at the resulting risk score, then discuss whether to tighten. Constraints can be negotiable business positions, not laws of physics.</p></div>
+      </div></div>
+    </div>
+
+    <div class="sc bl-accent" id="nlp-day5">
+      <div class="sc-hdr" onclick="toggle(this)">
+        <div class="sc-hdr-l">
+          <div class="sc-ico">⛰️</div>
+          <div><div class="sc-tag">Nonlinear</div><div class="sc-name">Local vs Global Optima — and Convexity</div></div>
+        </div><span class="chevron">▾</span>
+      </div>
+      <div class="sc-body"><div class="sc-in">
+        <ul>
+          <li>GRG Nonlinear climbs from wherever it starts → different starting points can land on <strong>different local optima</strong> (polynomial demo). Solver saying "optimal" may mean <em>locally</em> optimal.</li>
+          <li>Prefer linear reformulation when possible — most <code>IF</code>-driven "nonlinearity" converts to binaries.</li>
+          <li><strong>Convex exception:</strong> minimize a convex function (or maximize a concave one) and local = global — GRG is then trustworthy. This is exactly why the Markowitz variance minimization below is safe.</li>
+        </ul>
+      </div></div>
+    </div>
+
+    <div class="divider">Midday — Mean-Variance Portfolio</div>
+
+    <div class="sc bl-accent" id="markowitz">
+      <div class="sc-hdr" onclick="toggle(this)">
+        <div class="sc-hdr-l">
+          <div class="sc-ico">📈</div>
+          <div><div class="sc-tag">Markowitz</div><div class="sc-name">Mean-Variance Model (Robo-Advisor Engine)</div></div>
+        </div><span class="chevron">▾</span>
+      </div>
+      <div class="sc-body"><div class="sc-in">
+        <p>Robo-advisors asking "horizon + risk tolerance" are running <strong>Markowitz mean-variance</strong> underneath: weights as decisions, expected return as reward, variance as risk.</p>
+        <h4>The class build (150 months, funds AG / FC / TV)</h4>
+        <ul>
+          <li>Means 10.07% / 6.01% / 6.50%; stdevs 30.37% / 19.78% / 9.01%; covariance matrix via <code>COVARIANCE.P</code> — all pairwise covariances <em>negative</em> → great diversification</li>
+          <li>Portfolio return <code>=SUMPRODUCT(μ, w)</code>; variance <code>=MMULT(MMULT(w,Σ),TRANSPOSE(w))</code>; stdev <code>=SQRT(var)</code></li>
+          <li><strong>Solve:</strong> min stdev, s.t. return ≥ 8%, weights sum to 1, w ≥ 0 — <strong>GRG</strong> (convex min → global)</li>
+          <li>Start 30/30/40: return 7.42% (infeasible), sd 9.47% → <strong>optimum AG 44.2 / FC 16.0 / TV 39.8: return exactly 8%, sd 12.90%</strong>. Buying the extra return costs volatility; the negative correlations contain the damage.</li>
+        </ul>
+        <h4>Four ways to pose the same trade-off</h4>
+        <ol>
+          <li>Max return s.t. risk ≤ cap</li>
+          <li>Min stdev s.t. return ≥ target (class version)</li>
+          <li>Max return − λ·risk</li>
+          <li>Max Sharpe ratio = (return − r_f) / stdev</li>
+        </ol>
+        <p>A low-return asset can still earn its place if it <em>moves differently</em> from the rest — covariance is the point, not standalone performance.</p>
+      </div></div>
+    </div>
+
+    <div class="divider">Afternoon — Uncertainty &amp; Simulation</div>
+
+    <div class="sc bl-accent" id="newsvendor-enum">
+      <div class="sc-hdr" onclick="toggle(this)">
+        <div class="sc-hdr-l">
+          <div class="sc-ico">📦</div>
+          <div><div class="sc-tag">⭐ Prof flagged as important</div><div class="sc-name">Newsvendor Enumeration — the Profit Identity</div></div>
+        </div><span class="chevron">▾</span>
+      </div>
+      <div class="sc-body"><div class="sc-in">
+        <div class="callout"><span class="c-label">The whiteboard identity (memorize — post-module bait)</span>
+        <p><strong>Profit = Revenue − Ordering cost + Salvage value</strong><br>
+        Revenue = Price × Units sold · Units sold = <strong>MIN(Demand, Q)</strong><br>
+        Ordering cost = cost/unit × Q · Salvage = salvage/unit × Unsold · Unsold = Q − Units sold</p></div>
+        <p>Price $100, cost $75, salvage $25, Demand ~ Uniform[100, 300]. Enumerate all 201 demand scenarios for a fixed Q → full profit distribution, no randomness needed.</p>
+        <table class="dt">
+          <tr><th>Q</th><th>Avg profit</th><th>Worst case</th><th>P(loss)</th></tr>
+          <tr><td>200 (= forecast)</td><td>$3,115.67</td><td>−$2,500</td><td>16.9%</td></tr>
+          <tr><td><strong>166 (optimal)</strong></td><td><strong>$3,325.00</strong></td><td>−$800</td><td>5.5%</td></tr>
+          <tr><td>150 (zero-risk)</td><td>$3,274.25</td><td>$0</td><td>0%</td></tr>
+        </table>
+        <p>Why 166: critical ratio C<sub>u</sub>/(C<sub>u</sub>+C<sub>o</sub>) = 25/75 = <strong>1/3</strong> → order at the 33rd percentile of demand (166⅔). Ordering the mean overshoots because an unsold unit costs $50 while a missed sale costs $25. Higher Q raises the best case <em>and</em> the downside.</p>
+      </div></div>
+    </div>
+
+    <div class="sc bl-accent" id="monte-carlo">
+      <div class="sc-hdr" onclick="toggle(this)">
+        <div class="sc-hdr-l">
+          <div class="sc-ico">🎲</div>
+          <div><div class="sc-tag">Method</div><div class="sc-name">From Enumeration to Monte Carlo</div></div>
+        </div><span class="chevron">▾</span>
+      </div>
+      <div class="sc-body"><div class="sc-in">
+        <p>Enumeration works for one discrete uncertain input. With continuous distributions or several uncertain variables, the scenario space explodes — so <strong>sample</strong> instead of enumerate.</p>
+        <ol>
+          <li>Define uncertain inputs → 2. choose distributions → 3. generate random samples → 4. compute the output per sample → 5. analyze the output distribution</li>
+        </ol>
+        <h4>Crystal Ball workflow (same as Day 4)</h4>
+        <p>Define Assumption (e.g. <code>=CB.Uniform(100,300)</code>) → Define Forecast (profit) → Run Preferences 10,000 trials → Run → read histogram, statistics, percentiles, certainty. <strong>Reset before re-running.</strong></p>
+        <div class="callout"><span class="c-label">AI-assisted modeling note</span>
+        <p>A clear prompt (business logic + inputs + distributions + #samples + desired outputs) got an AI to build the same sim — but it defaulted to a <em>continuous</em> uniform where CB used discrete. Small numeric differences, same insight. Lesson: specify distributions explicitly; validate what the tool assumed.</p></div>
+      </div></div>
+    </div>
+
+    <div class="sc bl-accent" id="retirement">
+      <div class="sc-hdr" onclick="toggle(this)">
+        <div class="sc-hdr-l">
+          <div class="sc-ico">🏖️</div>
+          <div><div class="sc-tag">Two Sims</div><div class="sc-name">Retirement: Decumulation &amp; Accumulation</div></div>
+        </div><span class="chevron">▾</span>
+      </div>
+      <div class="sc-body"><div class="sc-in">
+        <h4>Decumulation (drawdown)</h4>
+        <p>$2M at retirement, S&amp;P mean 8.61% (sd ~19%), 20 equal withdrawals → deterministic PMT says <strong>$196K/yr</strong> lands exactly at $0 in year 20. With random returns, sequence-of-returns volatility creates a serious chance of running out <em>years early</em>. The sd being twice the mean is the tell.</p>
+        <h4>Accumulation (Build Your Own Model — slide 61)</h4>
+        <ul>
+          <li>$0 start at 30, <strong>$16,845 at the start of each year</strong>, return ~ Normal(6%, 2%) — a <em>fresh draw per year</em>, retire at 65</li>
+          <li>Row logic: <code>End = (Begin + Contribution) × (1 + r)</code>; forecast = ending balance at 64</li>
+          <li>Deterministic at flat 6%: <strong>$1.99M — just under the $2M goal</strong>. Simulated: <strong>P(≥ $2M) ≈ 45%</strong>; 90% of outcomes in ~$1.73M–$2.27M</li>
+        </ul>
+        <div class="callout amber"><span class="c-label">Pitfall</span>
+        <p>One return cell referenced 35 times = "every year earns the same random return" — wrong model, inflated spread. Each year gets its own <code>CB.Normal</code>.</p></div>
+      </div></div>
+    </div>
+
+    <div class="sc bl-accent" id="distributions">
+      <div class="sc-hdr" onclick="toggle(this)">
+        <div class="sc-hdr-l">
+          <div class="sc-ico">📊</div>
+          <div><div class="sc-tag">Cheat Sheet</div><div class="sc-name">Which Distribution When</div></div>
+        </div><span class="chevron">▾</span>
+      </div>
+      <div class="sc-body"><div class="sc-in">
+        <table class="dt">
+          <tr><th>Distribution</th><th>Use when…</th><th>Example</th></tr>
+          <tr><td>Uniform</td><td>only min &amp; max known, nothing favored</td><td>demand range from contract</td></tr>
+          <tr><td>Triangular</td><td>expert gives min / most-likely / max</td><td>loss recovery rate</td></tr>
+          <tr><td>Normal</td><td>many small independent effects (CLT)</td><td>annual return</td></tr>
+          <tr><td>Yes-No</td><td>does the event happen?</td><td>loan default, click, drug approval</td></tr>
+          <tr><td>Binomial</td><td>count of events over N trials</td><td># claims among policyholders</td></tr>
+          <tr><td>Custom discrete</td><td>categories with probabilities</td><td>market segment, economy state</td></tr>
+        </table>
+        <div class="callout"><span class="c-label">Risk pooling (PDF 6 callback)</span>
+        <p>Pool many <em>independent</em> risks and individual randomness cancels: casinos, insurers, loan books. One gambler is a coin flip; a million plays is a business. Sum sd grows as σ√n while the mean grows as nμ — relative risk shrinks.</p></div>
+      </div></div>
+    </div>
+
+    <div class="sc bl-accent" id="credit-var">
+      <div class="sc-hdr" onclick="toggle(this)">
+        <div class="sc-hdr-l">
+          <div class="sc-ico">🏦</div>
+          <div><div class="sc-tag">Capstone Example</div><div class="sc-name">Credit Risk Simulation &amp; Value-at-Risk</div></div>
+        </div><span class="chevron">▾</span>
+      </div>
+      <div class="sc-body"><div class="sc-in">
+        <p>200 loans (~$528M exposure), rating-based default probabilities, recovery ~ Triangular(0%, 25%, 90%).</p>
+        <div class="callout amber"><span class="c-label">The wrong model vs the right one</span>
+        <p><strong>Wrong:</strong> loss = exposure × default probability → every loan "loses" a little every trial; no tail. <strong>Right:</strong> simulate the <em>event</em> — <code>CB.YesNo(PD) × exposure × (1 − recovery)</code> — no default means zero loss; a default means a big one.</p></div>
+        <ul>
+          <li>Portfolio loss = SUM of 200 loan losses (forecast cell)</li>
+          <li>Distribution: heavily right-skewed; ~9% of trials lose nothing; mean ≈ $4.4M</li>
+          <li><strong>95% VaR ≈ $11.1M</strong> (95th percentile), 99% VaR ≈ $14.3M</li>
+        </ul>
+        <p><strong>VaR phrasing (exam-grade):</strong> "We are α% certain the portfolio will not lose more than $V over horizon N." It emerged from Bernoulli × Triangular products — no normal assumption could price that tail.</p>
+      </div></div>
+    </div>
+
+  </div><!-- /day5 -->
 
   <!-- ============ ASSIGNMENTS ============ -->
   <div id="panel-assignments" class="day-panel">
